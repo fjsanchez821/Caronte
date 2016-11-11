@@ -1,0 +1,1007 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.5.0.v201506092134 Build &lt;@BUILD@></property>
+    <list-property name="propertyBindings">
+        <structure>
+            <property name="name">URI</property>
+            <property name="id">4</property>
+        </structure>
+        <structure>
+            <property name="name">INCLCOLUMNNAME</property>
+            <property name="id">4</property>
+        </structure>
+        <structure>
+            <property name="name">INCLTYPELINE</property>
+            <property name="id">4</property>
+        </structure>
+        <structure>
+            <property name="name">OdaConnProfileName</property>
+            <property name="id">4</property>
+        </structure>
+        <structure>
+            <property name="name">OdaConnProfileStorePath</property>
+            <property name="id">4</property>
+        </structure>
+    </list-property>
+    <property name="units">in</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <data-sources>
+        <oda-data-source extensionID="org.eclipse.birt.report.data.oda.excel" name="Data Source" id="4">
+            <property name="URI">T:\DGI\Que\SIC\Proyectos\Gesper\GP METAENLACE\Doumentación\SEGUIMIENTO\2016-02\FIGESPER - GLPI Seguimiento 201602.xls</property>
+            <property name="INCLCOLUMNNAME">yes</property>
+            <property name="INCLTYPELINE">no</property>
+        </oda-data-source>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="org.eclipse.birt.report.data.oda.excel.dataSet" name="GLPI Data Set" id="5">
+            <list-property name="computedColumns">
+                <structure>
+                    <property name="name">Tipo formateado</property>
+                    <expression name="expression">row["Tipo"].substr(9,row["Tipo"].length)</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">Tiempo (horas)</property>
+                    <expression name="expression">row["Tiempo (minutos)"] / 60</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">Categoría</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">Categoría</text-property>
+                    <text-property name="heading">Categoría</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">Fecha tarea</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">Fecha tarea</text-property>
+                    <text-property name="heading">Fecha tarea</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">ID</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">ID</text-property>
+                    <text-property name="heading">ID</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">Login</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">Login</text-property>
+                    <text-property name="heading">Login</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">Prioridad</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">Prioridad</text-property>
+                    <text-property name="heading">Prioridad</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">Técnico</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">Técnico</text-property>
+                    <text-property name="heading">Técnico</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">Tiempo (minutos)</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">Tiempo (minutos)</text-property>
+                    <text-property name="heading">Tiempo (minutos)</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">Tipo</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">Tipo</text-property>
+                    <text-property name="heading">Tipo</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">Título</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">Título</text-property>
+                    <text-property name="heading">Título</text-property>
+                </structure>
+            </list-property>
+            <list-property name="parameters"/>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">Categoría</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">Fecha tarea</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">ID</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">Login</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">Prioridad</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">Técnico</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">Tiempo (minutos)</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">Tipo</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">9</property>
+                        <property name="name">Título</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">10</property>
+                        <property name="name">Tipo formateado</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">11</property>
+                        <property name="name">Tiempo (horas)</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">Data Source</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">Categoría</property>
+                    <property name="nativeName">Categoría</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">Fecha tarea</property>
+                    <property name="nativeName">Fecha tarea</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">ID</property>
+                    <property name="nativeName">ID</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">Login</property>
+                    <property name="nativeName">Login</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">Prioridad</property>
+                    <property name="nativeName">Prioridad</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">Técnico</property>
+                    <property name="nativeName">Técnico</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">Tiempo (minutos)</property>
+                    <property name="nativeName">Tiempo (minutos)</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">Tipo</property>
+                    <property name="nativeName">Tipo</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">Título</property>
+                    <property name="nativeName">Título</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[select "Categoría registro", "Fecha", "Id. registro", "Login", "Prioridad registro", "Técnico", "Tiempo (minutos)", "Tipo registro", "Título registro" from "T:/DGI/Que/SIC/Proyectos/Gesper/GP METAENLACE/Doumentación/SEGUIMIENTO/2016-02/FIGESPER - GLPI Seguimiento 201602.xls" : {"Categoría","Categoría registro",STRING;"Fecha tarea","Fecha",STRING;"ID","Id. registro",STRING;"Login","Login",STRING;"Prioridad","Prioridad registro",STRING;"Técnico","Técnico",STRING;"Tiempo (minutos)","Tiempo (minutos)",STRING;"Tipo","Tipo registro",STRING;"Título","Título registro",STRING}]]></xml-property>
+            <xml-property name="designerValues"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<model:DesignValues xmlns:design="http://www.eclipse.org/datatools/connectivity/oda/design" xmlns:model="http://www.eclipse.org/birt/report/model/adapter/odaModel">
+  <Version>2.0</Version>
+  <design:ResultSets derivedMetaData="true">
+    <design:resultSetDefinitions>
+      <design:resultSetColumns>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>Login</design:name>
+              <design:position>1</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>-1</design:precision>
+            <design:scale>-1</design:scale>
+            <design:nullability>Unknown</design:nullability>
+            <design:uiHints>
+              <design:displayName>Login</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>Login</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>Técnico</design:name>
+              <design:position>2</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>-1</design:precision>
+            <design:scale>-1</design:scale>
+            <design:nullability>Unknown</design:nullability>
+            <design:uiHints>
+              <design:displayName>Técnico</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>Técnico</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>Categoría</design:name>
+              <design:position>3</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>-1</design:precision>
+            <design:scale>-1</design:scale>
+            <design:nullability>Unknown</design:nullability>
+            <design:uiHints>
+              <design:displayName>Categoría</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>Categoría</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>Tipo</design:name>
+              <design:position>4</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>-1</design:precision>
+            <design:scale>-1</design:scale>
+            <design:nullability>Unknown</design:nullability>
+            <design:uiHints>
+              <design:displayName>Tipo</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>Tipo</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>ID</design:name>
+              <design:position>5</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>-1</design:precision>
+            <design:scale>-1</design:scale>
+            <design:nullability>Unknown</design:nullability>
+            <design:uiHints>
+              <design:displayName>ID</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>ID</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>Título</design:name>
+              <design:position>6</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>-1</design:precision>
+            <design:scale>-1</design:scale>
+            <design:nullability>Unknown</design:nullability>
+            <design:uiHints>
+              <design:displayName>Título</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>Título</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>Prioridad</design:name>
+              <design:position>7</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>-1</design:precision>
+            <design:scale>-1</design:scale>
+            <design:nullability>Unknown</design:nullability>
+            <design:uiHints>
+              <design:displayName>Prioridad</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>Prioridad</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>Fecha tarea</design:name>
+              <design:position>8</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>-1</design:precision>
+            <design:scale>-1</design:scale>
+            <design:nullability>Unknown</design:nullability>
+            <design:uiHints>
+              <design:displayName>Fecha tarea</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>Fecha tarea</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>Tiempo (minutos)</design:name>
+              <design:position>9</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>-1</design:precision>
+            <design:scale>-1</design:scale>
+            <design:nullability>Unknown</design:nullability>
+            <design:uiHints>
+              <design:displayName>Tiempo (minutos)</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>Tiempo (minutos)</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+      </design:resultSetColumns>
+      <design:criteria/>
+    </design:resultSetDefinitions>
+  </design:ResultSets>
+</model:DesignValues>]]></xml-property>
+            <property name="WORKSHEETS">GLPI</property>
+        </oda-data-set>
+    </data-sets>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <page-footer>
+                <text id="3">
+                    <property name="contentType">html</property>
+                    <text-property name="content"><![CDATA[<value-of>new Date()</value-of>]]></text-property>
+                </text>
+            </page-footer>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <list id="129">
+            <property name="fontFamily">"Calibri"</property>
+            <property name="dataSet">GLPI Data Set</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">Login</property>
+                    <text-property name="displayName">Login</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["Login"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">Técnico</property>
+                    <text-property name="displayName">Técnico</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["Técnico"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <group id="134">
+                <property name="groupName">Login</property>
+                <expression name="keyExpr" type="javascript">row["Login"]</expression>
+                <structure name="toc">
+                    <expression name="expressionValue" type="javascript">row["Login"]</expression>
+                </structure>
+                <property name="repeatHeader">false</property>
+                <property name="hideDetail">false</property>
+                <property name="pageBreakAfter">always-excluding-last</property>
+                <list-property name="sort">
+                    <structure>
+                        <expression name="key" type="javascript">row["Login"]</expression>
+                        <property name="direction">asc</property>
+                        <property name="strength">-1</property>
+                    </structure>
+                </list-property>
+                <header>
+                    <text-data id="133">
+                        <property name="backgroundColor">#666C1C</property>
+                        <property name="fontSize">11pt</property>
+                        <property name="fontWeight">bold</property>
+                        <property name="color">white</property>
+                        <property name="borderBottomStyle">solid</property>
+                        <property name="borderBottomWidth">thin</property>
+                        <property name="borderLeftStyle">solid</property>
+                        <property name="borderLeftWidth">thin</property>
+                        <property name="borderRightStyle">solid</property>
+                        <property name="borderRightWidth">thin</property>
+                        <property name="borderTopStyle">solid</property>
+                        <property name="borderTopWidth">thin</property>
+                        <property name="marginTop">0pt</property>
+                        <property name="marginLeft">0pt</property>
+                        <property name="marginBottom">0pt</property>
+                        <property name="paddingTop">5pt</property>
+                        <property name="paddingLeft">5pt</property>
+                        <property name="paddingBottom">5pt</property>
+                        <property name="paddingRight">5pt</property>
+                        <property name="display">block</property>
+                        <expression name="valueExpr">"TÉCNICO: " + row["Técnico"].toUpperCase()</expression>
+                        <property name="contentType">html</property>
+                    </text-data>
+                </header>
+                <footer>
+                    <table name="GLPI" id="318">
+                        <property name="width">100%</property>
+                        <property name="dataSet">GLPI Data Set</property>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">Login</property>
+                                <text-property name="displayName">Login</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Login"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Técnico</property>
+                                <text-property name="displayName">Técnico</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Técnico"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Categoría</property>
+                                <text-property name="displayName">Categoría</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Categoría"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Tipo</property>
+                                <text-property name="displayName">Tipo</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Tipo"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">ID</property>
+                                <text-property name="displayName">ID</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["ID"]</expression>
+                                <property name="dataType">decimal</property>
+                                <property name="allowExport">true</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Título</property>
+                                <text-property name="displayName">Título</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Título"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Prioridad</property>
+                                <text-property name="displayName">Prioridad</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Prioridad"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Fecha tarea</property>
+                                <text-property name="displayName">Fecha tarea</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Fecha tarea"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Tiempo (minutos)</property>
+                                <text-property name="displayName">Tiempo (minutos)</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Tiempo (minutos)"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Tipo formateado</property>
+                                <text-property name="displayName">Tipo formateado</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Tipo formateado"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Tiempo (horas)</property>
+                                <text-property name="displayName">Tiempo (horas)</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Tiempo (horas)"]</expression>
+                                <property name="dataType">decimal</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Horas</property>
+                                <text-property name="displayName">Horas</text-property>
+                                <property name="dataType">float</property>
+                                <simple-property-list name="aggregateOn">
+                                    <value>ID</value>
+                                </simple-property-list>
+                                <property name="aggregateFunction">SUM</property>
+                                <list-property name="arguments">
+                                    <structure>
+                                        <property name="name">Expression</property>
+                                        <expression name="value" type="javascript">row["Tiempo (horas)"]</expression>
+                                    </structure>
+                                </list-property>
+                                <property name="allowExport">true</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Horas Totales</property>
+                                <text-property name="displayName">Horas Totales</text-property>
+                                <property name="dataType">float</property>
+                                <property name="aggregateFunction">SUM</property>
+                                <list-property name="arguments">
+                                    <structure>
+                                        <property name="name">Expression</property>
+                                        <expression name="value" type="javascript">row["Tiempo (horas)"]</expression>
+                                    </structure>
+                                </list-property>
+                                <property name="allowExport">true</property>
+                            </structure>
+                        </list-property>
+                        <list-property name="filter">
+                            <structure>
+                                <property name="operator">eq</property>
+                                <expression name="expr" type="javascript">row["Login"]</expression>
+                                <simple-property-list name="value1">
+                                    <value>row._outer["Login"]</value>
+                                </simple-property-list>
+                                <property name="updateAggregation">true</property>
+                            </structure>
+                        </list-property>
+                        <column id="377">
+                            <property name="width">10%</property>
+                        </column>
+                        <column id="378">
+                            <property name="width">40%</property>
+                        </column>
+                        <column id="379">
+                            <property name="width">30%</property>
+                        </column>
+                        <column id="380">
+                            <property name="width">10%</property>
+                        </column>
+                        <column id="387">
+                            <property name="width">10%</property>
+                        </column>
+                        <group id="388">
+                            <property name="groupName">ID</property>
+                            <expression name="keyExpr" type="javascript">row["ID"]</expression>
+                            <structure name="toc">
+                                <expression name="expressionValue" type="javascript">row["ID"]</expression>
+                            </structure>
+                            <property name="repeatHeader">false</property>
+                            <property name="hideDetail">false</property>
+                            <method name="onCreate"><![CDATA[reportContext.setGlobalVariable("alt_grp", true);]]></method>
+                            <list-property name="sort">
+                                <structure>
+                                    <expression name="key" type="javascript">row["ID"]</expression>
+                                    <property name="direction">asc</property>
+                                    <property name="strength">-1</property>
+                                </structure>
+                            </list-property>
+                            <header>
+                                <row id="389">
+                                    <property name="borderBottomStyle">solid</property>
+                                    <property name="borderBottomWidth">thin</property>
+                                    <property name="borderLeftStyle">solid</property>
+                                    <property name="borderLeftWidth">thin</property>
+                                    <property name="borderRightStyle">solid</property>
+                                    <property name="borderRightWidth">thin</property>
+                                    <property name="paddingTop">3pt</property>
+                                    <property name="paddingBottom">3pt</property>
+                                    <property name="verticalAlign">middle</property>
+                                    <property name="height">100%</property>
+                                    <cell id="390">
+                                        <data id="413">
+                                            <property name="marginTop">auto</property>
+                                            <structure name="numberFormat">
+                                                <property name="category">Fixed</property>
+                                                <property name="pattern">###0{RoundingMode=HALF_UP}</property>
+                                            </structure>
+                                            <property name="textAlign">center</property>
+                                            <property name="resultSetColumn">ID</property>
+                                        </data>
+                                    </cell>
+                                    <cell id="391">
+                                        <data id="354">
+                                            <property name="resultSetColumn">Título</property>
+                                        </data>
+                                    </cell>
+                                    <cell id="392">
+                                        <data id="348">
+                                            <property name="textAlign">left</property>
+                                            <property name="resultSetColumn">Categoría</property>
+                                        </data>
+                                    </cell>
+                                    <cell id="393">
+                                        <data id="356">
+                                            <property name="textAlign">center</property>
+                                            <property name="resultSetColumn">Prioridad</property>
+                                        </data>
+                                    </cell>
+                                    <cell id="400">
+                                        <data id="414">
+                                            <structure name="numberFormat">
+                                                <property name="category">Fixed</property>
+                                                <property name="pattern">###0.00{RoundingMode=HALF_UP}</property>
+                                            </structure>
+                                            <property name="textAlign">right</property>
+                                            <property name="resultSetColumn">Horas</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                            </header>
+                        </group>
+                        <footer>
+                            <row id="430">
+                                <cell id="431"/>
+                                <cell id="432"/>
+                                <cell id="433"/>
+                                <cell id="434">
+                                    <label id="441">
+                                        <property name="fontWeight">bold</property>
+                                        <property name="textAlign">right</property>
+                                        <text-property name="text">TOTAL:</text-property>
+                                    </label>
+                                </cell>
+                                <cell id="435">
+                                    <data id="439">
+                                        <property name="fontWeight">bold</property>
+                                        <structure name="numberFormat">
+                                            <property name="category">Fixed</property>
+                                            <property name="pattern">###0.00{RoundingMode=HALF_UP}</property>
+                                        </structure>
+                                        <property name="textAlign">right</property>
+                                        <property name="resultSetColumn">Horas Totales</property>
+                                    </data>
+                                </cell>
+                            </row>
+                        </footer>
+                    </table>
+                    <table name="Desglose" id="442">
+                        <property name="borderBottomStyle">solid</property>
+                        <property name="borderBottomWidth">thin</property>
+                        <property name="borderLeftStyle">solid</property>
+                        <property name="borderLeftWidth">thin</property>
+                        <property name="borderRightStyle">solid</property>
+                        <property name="borderRightWidth">thin</property>
+                        <property name="borderTopStyle">solid</property>
+                        <property name="borderTopWidth">thin</property>
+                        <property name="width">100%</property>
+                        <property name="dataSet">GLPI Data Set</property>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">Login</property>
+                                <text-property name="displayName">Login</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Login"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Técnico</property>
+                                <text-property name="displayName">Técnico</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Técnico"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Categoría</property>
+                                <text-property name="displayName">Categoría</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Categoría"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Tipo</property>
+                                <text-property name="displayName">Tipo</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Tipo"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">ID</property>
+                                <text-property name="displayName">ID</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["ID"]</expression>
+                                <property name="dataType">decimal</property>
+                                <property name="allowExport">true</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Título</property>
+                                <text-property name="displayName">Título</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Título"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Prioridad</property>
+                                <text-property name="displayName">Prioridad</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Prioridad"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Fecha tarea</property>
+                                <text-property name="displayName">Fecha tarea</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Fecha tarea"]</expression>
+                                <property name="dataType">date</property>
+                                <property name="allowExport">true</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Tiempo (minutos)</property>
+                                <text-property name="displayName">Tiempo (minutos)</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Tiempo (minutos)"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Tipo formateado</property>
+                                <text-property name="displayName">Tipo formateado</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Tipo formateado"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Tiempo (horas)</property>
+                                <text-property name="displayName">Tiempo (horas)</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["Tiempo (horas)"]</expression>
+                                <property name="dataType">decimal</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Horas</property>
+                                <text-property name="displayName">Horas</text-property>
+                                <property name="dataType">float</property>
+                                <property name="aggregateFunction">SUM</property>
+                                <list-property name="arguments">
+                                    <structure>
+                                        <property name="name">Expression</property>
+                                        <expression name="value" type="javascript">row["Tiempo (horas)"]</expression>
+                                    </structure>
+                                </list-property>
+                                <property name="allowExport">true</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Horas Totales</property>
+                                <text-property name="displayName">Horas Totales</text-property>
+                                <property name="dataType">float</property>
+                                <property name="aggregateFunction">SUM</property>
+                                <list-property name="arguments">
+                                    <structure>
+                                        <property name="name">Expression</property>
+                                        <expression name="value" type="javascript">row["Tiempo (horas)"]</expression>
+                                    </structure>
+                                </list-property>
+                                <property name="allowExport">true</property>
+                            </structure>
+                            <structure>
+                                <property name="name">Horas Dia Totales</property>
+                                <text-property name="displayName">Horas Dia Totales</text-property>
+                                <property name="dataType">float</property>
+                                <simple-property-list name="aggregateOn">
+                                    <value>Fecha</value>
+                                </simple-property-list>
+                                <property name="aggregateFunction">SUM</property>
+                                <list-property name="arguments">
+                                    <structure>
+                                        <property name="name">Expression</property>
+                                        <expression name="value" type="javascript">row["Tiempo (horas)"]</expression>
+                                    </structure>
+                                </list-property>
+                                <property name="allowExport">true</property>
+                            </structure>
+                        </list-property>
+                        <list-property name="filter">
+                            <structure>
+                                <property name="operator">eq</property>
+                                <expression name="expr" type="javascript">row["Login"]</expression>
+                                <simple-property-list name="value1">
+                                    <value>row._outer["Login"]</value>
+                                </simple-property-list>
+                                <property name="updateAggregation">true</property>
+                            </structure>
+                        </list-property>
+                        <column id="463">
+                            <property name="width">10%</property>
+                        </column>
+                        <column id="464">
+                            <property name="width">10%</property>
+                        </column>
+                        <column id="465">
+                            <property name="width">60%</property>
+                        </column>
+                        <column id="466">
+                            <property name="width">10%</property>
+                        </column>
+                        <column id="467">
+                            <property name="width">10%</property>
+                        </column>
+                        <header>
+                            <row id="487">
+                                <property name="borderBottomStyle">solid</property>
+                                <property name="borderBottomWidth">thin</property>
+                                <cell id="488">
+                                    <property name="colSpan">5</property>
+                                    <property name="rowSpan">1</property>
+                                    <property name="paddingTop">0pt</property>
+                                    <property name="paddingLeft">0pt</property>
+                                    <property name="paddingBottom">0pt</property>
+                                    <property name="paddingRight">0pt</property>
+                                    <label id="493">
+                                        <property name="backgroundColor">#ADB830</property>
+                                        <property name="fontWeight">bold</property>
+                                        <property name="paddingTop">0pt</property>
+                                        <property name="paddingLeft">0pt</property>
+                                        <property name="paddingBottom">0pt</property>
+                                        <property name="paddingRight">0pt</property>
+                                        <text-property name="text">DESGLOSE POR DÍAS</text-property>
+                                    </label>
+                                </cell>
+                            </row>
+                        </header>
+                        <group id="494">
+                            <property name="groupName">Fecha</property>
+                            <property name="interval">day</property>
+                            <expression name="keyExpr" type="javascript">row["Fecha tarea"]</expression>
+                            <structure name="toc">
+                                <expression name="expressionValue" type="javascript">row["Fecha tarea"]</expression>
+                            </structure>
+                            <property name="repeatHeader">false</property>
+                            <property name="hideDetail">false</property>
+                            <method name="onCreate"><![CDATA[if (reportContext.getGlobalVariable("alt_grp") == false)
+    reportContext.setGlobalVariable("alt_grp", true);
+else
+    reportContext.setGlobalVariable("alt_grp", false);]]></method>
+                            <footer>
+                                <row id="501">
+                                    <property name="borderBottomStyle">solid</property>
+                                    <property name="borderBottomWidth">thin</property>
+                                    <list-property name="highlightRules">
+                                        <structure>
+                                            <property name="operator">is-true</property>
+                                            <property name="backgroundColor">#CDD661</property>
+                                            <expression name="testExpr" type="javascript">reportContext.getGlobalVariable("alt_grp")</expression>
+                                        </structure>
+                                    </list-property>
+                                    <cell id="502"/>
+                                    <cell id="503"/>
+                                    <cell id="504"/>
+                                    <cell id="505">
+                                        <property name="borderLeftStyle">solid</property>
+                                        <property name="borderLeftWidth">thin</property>
+                                        <property name="borderTopStyle">solid</property>
+                                        <property name="borderTopWidth">thin</property>
+                                        <property name="verticalAlign">middle</property>
+                                        <label id="511">
+                                            <property name="fontWeight">bold</property>
+                                            <property name="textAlign">right</property>
+                                            <text-property name="text">TOTAL:</text-property>
+                                        </label>
+                                    </cell>
+                                    <cell id="506">
+                                        <property name="borderTopStyle">solid</property>
+                                        <property name="borderTopWidth">thin</property>
+                                        <data id="508">
+                                            <property name="fontWeight">bold</property>
+                                            <structure name="numberFormat">
+                                                <property name="category">Fixed</property>
+                                                <property name="pattern">###0.00{RoundingMode=HALF_UP}</property>
+                                            </structure>
+                                            <property name="textAlign">right</property>
+                                            <property name="resultSetColumn">Horas Dia Totales</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                            </footer>
+                        </group>
+                        <detail>
+                            <row id="475">
+                                <list-property name="highlightRules">
+                                    <structure>
+                                        <property name="operator">is-true</property>
+                                        <property name="backgroundColor">#CDD661</property>
+                                        <expression name="testExpr" type="javascript">reportContext.getGlobalVariable("alt_grp")</expression>
+                                    </structure>
+                                </list-property>
+                                <cell id="476">
+                                    <data id="486">
+                                        <structure name="dateTimeFormat">
+                                            <property name="category">Short Date</property>
+                                            <property name="pattern">Short Date</property>
+                                        </structure>
+                                        <property name="resultSetColumn">Fecha tarea</property>
+                                    </data>
+                                </cell>
+                                <cell id="477">
+                                    <data id="468">
+                                        <property name="marginTop">auto</property>
+                                        <structure name="numberFormat">
+                                            <property name="category">Fixed</property>
+                                            <property name="pattern">###0{RoundingMode=HALF_UP}</property>
+                                        </structure>
+                                        <property name="textAlign">left</property>
+                                        <property name="resultSetColumn">ID</property>
+                                    </data>
+                                </cell>
+                                <cell id="478">
+                                    <data id="481">
+                                        <property name="resultSetColumn">Título</property>
+                                    </data>
+                                </cell>
+                                <cell id="479"/>
+                                <cell id="480">
+                                    <data id="485">
+                                        <structure name="numberFormat">
+                                            <property name="category">Fixed</property>
+                                            <property name="pattern">###0.00{RoundingMode=HALF_UP}</property>
+                                        </structure>
+                                        <property name="textAlign">right</property>
+                                        <property name="resultSetColumn">Tiempo (horas)</property>
+                                    </data>
+                                </cell>
+                            </row>
+                        </detail>
+                    </table>
+                </footer>
+            </group>
+        </list>
+    </body>
+</report>
