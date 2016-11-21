@@ -396,7 +396,7 @@ public class App extends Application {
 				//for(itemLis)
 				itemList.removeAll(itemList);
 				
-				file = new File(properties.getProperty("pendiente.paso.path") + "/"
+				file = new File(properties.getProperty("svn.seguimiento.path") + "/"
 						+ "GLPI FIGESPER - CARM C.HACIENDA " + new SimpleDateFormat("yyyyMM").format(new Date()) + ".ods");
 
 				itemList.addAll(service.parse(file));
@@ -434,7 +434,7 @@ public class App extends Application {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 		
-		file = new File(properties.getProperty("pendiente.paso.path") + "/"
+		file = new File(properties.getProperty("sv.seguimiento.path") + "/"
 				+ "GLPI FIGESPER - CARM C.HACIENDA " + new SimpleDateFormat("yyyyMM").format(new Date()) + ".ods");
 
 		itemList.addAll(service.parse(file));
