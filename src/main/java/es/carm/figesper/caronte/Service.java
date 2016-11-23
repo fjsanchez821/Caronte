@@ -104,7 +104,6 @@ public class Service {
 	private List<Item> listaDependenciasDeTicketsASubir;
 	private List<Item> listaBBDD;
 	private List<Item> listaOtros;
-	
 
 	public Item getTotalizadorItem() {
 		return totalizadorItem;
@@ -118,8 +117,8 @@ public class Service {
 		return aplicacion;
 	}
 
-	public void setAplicacion(App aplicacion) {
-		this.aplicacion = aplicacion;
+	public void setAplicacion(App app) {
+		this.aplicacion = app;
 	}
 
 	public Service() throws ServiceException {
@@ -251,7 +250,8 @@ public class Service {
 		return items;
 	}
 
-	//funcion para parsear del EXCEL pendiente paso a produccion la hoja de BBDD
+	// funcion para parsear del EXCEL pendiente paso a produccion la hoja de
+	// BBDD
 	public List<Item> parseBBDD(File file) throws ServiceException {
 
 		List<Item> items = new ArrayList<Item>();
@@ -323,7 +323,7 @@ public class Service {
 
 		return items;
 	}
-	
+
 	public List<Item> parseOtros(File file) throws ServiceException {
 
 		List<Item> items = new ArrayList<Item>();
@@ -395,9 +395,7 @@ public class Service {
 
 		return items;
 	}
-	
-	
-	
+
 	List<Item> leerPendienteAProduccion(int pestana) {
 		List<Item> items = new ArrayList<Item>();
 
@@ -418,39 +416,39 @@ public class Service {
 					break;
 				}
 				Item item;
-				//Se hace un switch segun la pagina del EXCEL
+				// Se hace un switch segun la pagina del EXCEL
 				String path, version, autor, desarrollo, pruebas, rutaSVN;
-				switch(pestana){
-					case 0:
-						path = row.getCellByIndex(1).getStringValue();
-						version = row.getCellByIndex(2).getStringValue();
-						autor = row.getCellByIndex(3).getStringValue();
-						item = new Item(glpi, path, version, autor);
-						items.add(item);
-						break;
-						
-					case 1:
-						path = row.getCellByIndex(1).getStringValue();
-						version = row.getCellByIndex(2).getStringValue();
-						autor = row.getCellByIndex(3).getStringValue();
-						desarrollo = row.getCellByIndex(4).getStringValue();
-						pruebas = row.getCellByIndex(5).getStringValue();
-						item = new Item(glpi, path, version, autor, desarrollo, pruebas);
-						items.add(item);
-						break;
-						
-					case 2:
-						path = row.getCellByIndex(1).getStringValue();
-						version = row.getCellByIndex(2).getStringValue();
-						autor = row.getCellByIndex(3).getStringValue();
-						desarrollo = row.getCellByIndex(4).getStringValue();
-						pruebas = row.getCellByIndex(5).getStringValue();
-						rutaSVN = row.getCellByIndex(6).getStringValue();
-						item = new Item(glpi, path, version, autor, desarrollo, pruebas, rutaSVN);
-						items.add(item);
-						break;
+				switch (pestana) {
+				case 0:
+					path = row.getCellByIndex(1).getStringValue();
+					version = row.getCellByIndex(2).getStringValue();
+					autor = row.getCellByIndex(3).getStringValue();
+					item = new Item(glpi, path, version, autor);
+					items.add(item);
+					break;
+
+				case 1:
+					path = row.getCellByIndex(1).getStringValue();
+					version = row.getCellByIndex(2).getStringValue();
+					autor = row.getCellByIndex(3).getStringValue();
+					desarrollo = row.getCellByIndex(4).getStringValue();
+					pruebas = row.getCellByIndex(5).getStringValue();
+					item = new Item(glpi, path, version, autor, desarrollo, pruebas);
+					items.add(item);
+					break;
+
+				case 2:
+					path = row.getCellByIndex(1).getStringValue();
+					version = row.getCellByIndex(2).getStringValue();
+					autor = row.getCellByIndex(3).getStringValue();
+					desarrollo = row.getCellByIndex(4).getStringValue();
+					pruebas = row.getCellByIndex(5).getStringValue();
+					rutaSVN = row.getCellByIndex(6).getStringValue();
+					item = new Item(glpi, path, version, autor, desarrollo, pruebas, rutaSVN);
+					items.add(item);
+					break;
 				}
-		
+
 			}
 			return items;
 
@@ -473,7 +471,8 @@ public class Service {
 		listaDependenciasDeTicketsASubir = new ArrayList<Item>();
 		for (Item item : items2) {
 			for (Item item2 : items2) {
-				if (item2.getGlpi().get().equals("Total Ficheros")||item2.getGlpi().get().equals(item.getGlpi().get()))
+				if (item2.getGlpi().get().equals("Total Ficheros")
+						|| item2.getGlpi().get().equals(item.getGlpi().get()))
 					continue;
 				if (item2.getPath().getValue().equals(item.getPath().getValue())) {
 					System.out.println("Dependencia de " + item.getPath().getValue() + " con versión anterior "
@@ -494,7 +493,8 @@ public class Service {
 						}
 					}
 				}
-				if(!listaDependenciasDeTicketsASubir.contains(item2)) listaDependenciasDeTicketsASubir.add(item2);
+				if (!listaDependenciasDeTicketsASubir.contains(item2))
+					listaDependenciasDeTicketsASubir.add(item2);
 			}
 		}
 		for (Item item : items) {
@@ -531,18 +531,7 @@ public class Service {
 		Row titulo = hoja.createRow(numFilas);
 		Cell celdaTitulo = titulo.createCell(0);
 		hoja.addMergedRegion(new CellRangeAddress(0, 0, 0, 3));
-		// properties.setProperty("numero.paso.actual",
-		// String.valueOf(numPaso));
-		// File f = new File("./src/main/resources/caronte.properties");
-		// OutputStream fichProp;
-		// try {
-		// fichProp = new FileOutputStream(f);
-		// properties.store(fichProp, "");
-		// } catch (FileNotFoundException e) {
-		// e.printStackTrace();
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
+
 		CellStyle estiloTitulo = libro.createCellStyle();
 		estiloTitulo.setFillForegroundColor(IndexedColors.BROWN.getIndex());
 		XSSFFont fuente = libro.createFont();
@@ -586,24 +575,12 @@ public class Service {
 		hoja.setColumnWidth(2, 2500);
 		hoja.setColumnWidth(3, 4500);
 	}
-	
+
 	private void generarCabeceraBBDD(XSSFWorkbook libro, XSSFSheet hoja) {
-		numFilas=0;
+		numFilas = 0;
 		Row titulo = hoja.createRow(numFilas);
 		Cell celdaTitulo = titulo.createCell(0);
 		hoja.addMergedRegion(new CellRangeAddress(0, 0, 0, 3));
-		// properties.setProperty("numero.paso.actual",
-		// String.valueOf(numPaso));
-		// File f = new File("./src/main/resources/caronte.properties");
-		// OutputStream fichProp;
-		// try {
-		// fichProp = new FileOutputStream(f);
-		// properties.store(fichProp, "");
-		// } catch (FileNotFoundException e) {
-		// e.printStackTrace();
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
 		CellStyle estiloTitulo = libro.createCellStyle();
 		estiloTitulo.setFillForegroundColor(IndexedColors.BROWN.getIndex());
 		XSSFFont fuente = libro.createFont();
@@ -641,30 +618,19 @@ public class Service {
 		celdaEncabezado = encabezado.createCell(3);
 		celdaEncabezado.setCellStyle(estiloEncabezado);
 		celdaEncabezado.setCellValue("USUARIO");
-		
+
 		hoja.setColumnWidth(0, 2500);
 		hoja.setColumnWidth(1, 25000);
 		hoja.setColumnWidth(2, 2500);
 		hoja.setColumnWidth(3, 4500);
 	}
-	
+
 	private void generarCabeceraOtros(XSSFWorkbook libro, XSSFSheet hoja) {
-		numFilas=0;
+		numFilas = 0;
 		Row titulo = hoja.createRow(numFilas);
 		Cell celdaTitulo = titulo.createCell(0);
 		hoja.addMergedRegion(new CellRangeAddress(0, 0, 0, 3));
-		// properties.setProperty("numero.paso.actual",
-		// String.valueOf(numPaso));
-		// File f = new File("./src/main/resources/caronte.properties");
-		// OutputStream fichProp;
-		// try {
-		// fichProp = new FileOutputStream(f);
-		// properties.store(fichProp, "");
-		// } catch (FileNotFoundException e) {
-		// e.printStackTrace();
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
+
 		CellStyle estiloTitulo = libro.createCellStyle();
 		estiloTitulo.setFillForegroundColor(IndexedColors.BROWN.getIndex());
 		XSSFFont fuente = libro.createFont();
@@ -711,10 +677,9 @@ public class Service {
 	}
 
 	private int getNumPaso() {
-		
-		
+
 		int numPaso = 0;
-		//JAVI descomentar esto
+		// JAVI descomentar esto
 		File directorio = new File(properties.getProperty("svn.inventory.path"));
 		File ficheros[] = directorio.listFiles();
 		for (File file : ficheros) {
@@ -732,20 +697,19 @@ public class Service {
 	}
 
 	public boolean exportarAFichero(FilteredList<Item> filteredList) {
-		
+
 		listaBBDD = leerPendienteAProduccion(1);
 		listaOtros = leerPendienteAProduccion(2);
-		
-		
+
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					
+
 					numPaso = getNumPaso(); // Integer.valueOf(properties.getProperty("numero.paso.actual"))
 											// + 1;
 					// javaFX operations should go here
-					
+
 					TextInputDialog dialog = new TextInputDialog(String.valueOf(numPaso));
 					dialog.setTitle("Introducción del Número de Paso");
 					dialog.setHeaderText("");
@@ -753,18 +717,18 @@ public class Service {
 
 					// The Java 8 way to get the response value (with lambda
 					// expression).
-				
+
 					Optional<String> result = dialog.showAndWait();
 					// result.ifPresent(paso -> System.out.println("El paso
 					// elegido ha sido: " + paso));
 					result.ifPresent(paso -> numPaso = Integer.valueOf(paso));
-					
+
 					aplicacion.getPb().setProgress(aplicacion.getPb().getProgress() + 0.5);
 					aplicacion.getPi().setProgress(aplicacion.getPi().getProgress() + 0.5);
 
 					SimpleDateFormat formatoFechaConsecutiva = new SimpleDateFormat("yyyyMMdd");
 					String fechaPaso = formatoFechaConsecutiva.format(new Date());
-				
+
 					String directorio = properties.getProperty("svn.inventory.path") + "/Paso " + numPaso + " "
 							+ fechaPaso;
 
@@ -781,13 +745,13 @@ public class Service {
 					// Creamos las 3 hojas y generamos sus encabezados
 					XSSFSheet hoja = libro.createSheet("Ficheros");
 					generarCabecera(libro, hoja);
-					
+
 					XSSFSheet hojaBBDD = libro.createSheet("BBDD");
 					generarCabeceraBBDD(libro, hojaBBDD);
-					
+
 					XSSFSheet hojaOtros = libro.createSheet("Otros");
 					generarCabeceraOtros(libro, hojaOtros);
-					
+
 					numFilas = 2;
 					for (Item item : filteredList) {
 						Row fila = hoja.createRow(numFilas);
@@ -812,75 +776,79 @@ public class Service {
 						numFilas++;
 
 					}
-					
-					numFilas=2;
+
+					numFilas = 2;
 					for (Item item : listaBBDD) {
-						
-						Row fila = hojaBBDD.createRow(numFilas);
+						for (Item itemFicheros : filteredList) {
+							if (item.getGlpi().getValue().equals(itemFicheros.getGlpi().getValue())) {
+								Row fila = hojaBBDD.createRow(numFilas);
 
-						Cell celda = fila.createCell(0);
-						CellStyle estilo = libro.createCellStyle();
-						estilo.setBorderBottom(CellStyle.BORDER_THIN);
-						estilo.setBorderTop(CellStyle.BORDER_THIN);
-						estilo.setBorderRight(CellStyle.BORDER_THIN);
-						estilo.setBorderLeft(CellStyle.BORDER_THIN);
-						celda.setCellStyle(estilo);
-						celda.setCellValue(item.getGlpi().getValue());
-						celda = fila.createCell(1);
-						celda.setCellStyle(estilo);
-						celda.setCellValue(item.getPath().getValue());//fallo aqui
-						celda = fila.createCell(2);
-						celda.setCellStyle(estilo);
-						celda.setCellValue(item.getRevision().getValue());
-						celda = fila.createCell(3);
-						celda.setCellStyle(estilo);
-						celda.setCellValue(item.getAuthor().getValue());
-						celda = fila.createCell(4);
-						numFilas++;
+								Cell celda = fila.createCell(0);
+								CellStyle estilo = libro.createCellStyle();
+								estilo.setBorderBottom(CellStyle.BORDER_THIN);
+								estilo.setBorderTop(CellStyle.BORDER_THIN);
+								estilo.setBorderRight(CellStyle.BORDER_THIN);
+								estilo.setBorderLeft(CellStyle.BORDER_THIN);
+								celda.setCellStyle(estilo);
+								celda.setCellValue(item.getGlpi().getValue());
+								celda = fila.createCell(1);
+								celda.setCellStyle(estilo);
+								celda.setCellValue(item.getPath().getValue());
+								celda = fila.createCell(2);
+								celda.setCellStyle(estilo);
+								celda.setCellValue(item.getRevision().getValue());
+								celda = fila.createCell(3);
+								celda.setCellStyle(estilo);
+								celda.setCellValue(item.getAuthor().getValue());
+								celda = fila.createCell(4);
+								numFilas++;
+								break;
+							}
+						}
 					}
-					
-					numFilas=2;
+
+					numFilas = 2;
 					for (Item item : listaOtros) {
-						
-						Row fila = hojaOtros.createRow(numFilas);
+						System.out.println("wa");
+						for (Item itemFicheros : filteredList) {
+							System.out.println("we");
+							if (item.getGlpi().getValue().equals(itemFicheros.getGlpi().getValue())) {
+								System.out.println("wi");
+								Row fila = hojaOtros.createRow(numFilas);
 
-						Cell celda = fila.createCell(0);
-						CellStyle estilo = libro.createCellStyle();
-						estilo.setBorderBottom(CellStyle.BORDER_THIN);
-						estilo.setBorderTop(CellStyle.BORDER_THIN);
-						estilo.setBorderRight(CellStyle.BORDER_THIN);
-						estilo.setBorderLeft(CellStyle.BORDER_THIN);
-						
-						System.out.println(item.getGlpi().getValue() +" - "+item.getPath().getValue()+" - "+item.getRevision().getValue()+ " - "+item.getAuthor().getValue()+" - "+item.getDesarrollo().getValue()+" - "+item.getPruebas().getValue()+" - "+item.getRutaSVN().getValue());
-						
-						celda.setCellStyle(estilo);
-						celda.setCellValue(item.getGlpi().getValue());
-						celda = fila.createCell(1);
-						celda.setCellStyle(estilo);
-						celda.setCellValue(item.getPath().getValue());
-						celda = fila.createCell(2);
-						celda.setCellStyle(estilo);
-						celda.setCellValue(item.getRevision().getValue());
-						celda = fila.createCell(3);
-						celda.setCellStyle(estilo);
-						celda.setCellValue(item.getAuthor().getValue());
-						celda = fila.createCell(4);
-						
-						numFilas++;
+								Cell celda = fila.createCell(0);
+								CellStyle estilo = libro.createCellStyle();
+								estilo.setBorderBottom(CellStyle.BORDER_THIN);
+								estilo.setBorderTop(CellStyle.BORDER_THIN);
+								estilo.setBorderRight(CellStyle.BORDER_THIN);
+								estilo.setBorderLeft(CellStyle.BORDER_THIN);
+								celda.setCellStyle(estilo);
+								celda.setCellValue(item.getGlpi().getValue());
+								celda = fila.createCell(1);
+								celda.setCellStyle(estilo);
+								celda.setCellValue(item.getPath().getValue());
+								celda = fila.createCell(2);
+								celda.setCellStyle(estilo);
+								celda.setCellValue(item.getRevision().getValue());
+								celda = fila.createCell(3);
+								celda.setCellStyle(estilo);
+								celda.setCellValue(item.getAuthor().getValue());
+								celda = fila.createCell(4);
+								numFilas++;
+								break;
+							}
+						}
 					}
-					
-					// hoja.autoSizeColumn(0);
+
 					hoja.autoSizeColumn(1); // Dejamos el autosize para la
 											// columna del
 											// fichero por si el nombre es más
 											// largo
-					// hoja.autoSizeColumn(2);
-					// hoja.autoSizeColumn(3);
 					FileOutputStream out = new FileOutputStream(new File(directorio + "/" + fichero));
 					libro.write(out);
-			
+
 					out.close();
-			
+
 					aplicacion.getPb().setProgress(aplicacion.getPb().getProgress() + 0.25);
 					aplicacion.getPi().setProgress(aplicacion.getPi().getProgress() + 0.25);
 					System.out.println("Excel escrito satisfactoriamente...");
@@ -893,9 +861,6 @@ public class Service {
 		return true;
 	}
 
-	
-	
-	
 	public HashMap<String, Item> extraer(String glpi) {
 
 		DefaultSVNOptions options = new DefaultSVNOptions();
@@ -929,54 +894,17 @@ public class Service {
 					System.out.println("log message: " + logEntry.getMessage());
 
 					if (logEntry.getChangedPaths().size() > 0) {
-						// System.out.println();
-						// System.out.println("changed paths:");
 						Set changedPathsSet = logEntry.getChangedPaths().keySet();
-						// boolean encontrado = false;
 
 						for (Iterator changedPaths = changedPathsSet.iterator(); changedPaths.hasNext();) {
 							SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntry.getChangedPaths()
 									.get(changedPaths.next());
-							// if (entryPath.getPath().contains("ROROr")) {
-							// encontrado = true;
-							// if(!ficheros.containsKey(entryPath.getPath())) {
-							// Registro registro = new Registro();
-							// registro.setGlpi(glpi);
-							// registro.setFichero(entryPath.getPath());
-							// registro.setVersion(String.valueOf(logEntry.getRevision()));
-							// registro.setProgramador(logEntry.getAuthor());
 							String path = entryPath.getPath().substring(10);
 							Item item = new Item(path, String.valueOf(logEntry.getRevision()));
 							item.getGlpi().set(glpi);
 							item.getAuthor().set(logEntry.getAuthor());
 							ficheros.put(entryPath.getPath(), item);
-							// }
-
-							// System.out
-							// .println(" "
-							// + entryPath.getType()
-							// + " "
-							// + entryPath.getPath()
-							// + ((entryPath.getCopyPath() != null) ? " (from "
-							// + entryPath
-							// .getCopyPath()
-							// + " revision "
-							// + entryPath
-							// .getCopyRevision()
-							// + ")"
-							// : ""));
 						}
-						// }
-						/*
-						 * if (encontrado &&
-						 * logEntry.getMessage().contains("GLPI")) {
-						 * System.out.println("revision: " +
-						 * logEntry.getRevision()); System.out.println(
-						 * "author: " + logEntry.getAuthor());
-						 * System.out.println("date: " + logEntry.getDate());
-						 * System.out.println("log message: " +
-						 * logEntry.getMessage()); }
-						 */
 					}
 				}
 			}
@@ -993,25 +921,6 @@ public class Service {
 		} finally {
 			clientManager.dispose();
 		}
-
-		/*
-		 * SVNUpdateClient updateClient = clientManager.getUpdateClient();
-		 * updateClient.setIgnoreExternals(false);
-		 * 
-		 * for (Item item : items) {
-		 * 
-		 * try {
-		 * 
-		 * SVNURL url = SVNURL.parseURIEncoded(srcRepoURL +
-		 * item.getPath().get()); File path = new File(srcWorkingCopy +
-		 * item.getPath().get()); SVNRevision revision =
-		 * SVNRevision.parse(item.getRevision() .get());
-		 * updateClient.doExport(url, path, revision, revision, "native", true,
-		 * SVNDepth.INFINITY); item.getExported().set(true);
-		 * 
-		 * } catch (SVNException e) { LOGGER.error(e.getLocalizedMessage()); } }
-		 */
-
 	}
 
 	public void history() {
@@ -1045,10 +954,7 @@ public class Service {
 					System.out.println("log message: " + logEntry.getMessage());
 
 					if (logEntry.getChangedPaths().size() > 0) {
-						// System.out.println();
-						// System.out.println("changed paths:");
 						Set changedPathsSet = logEntry.getChangedPaths().keySet();
-						// boolean encontrado = false;
 
 						for (Iterator changedPaths = changedPathsSet.iterator(); changedPaths.hasNext();) {
 							SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntry.getChangedPaths()
@@ -1059,42 +965,13 @@ public class Service {
 									+ ((entryPath.getCopyPath() != null) ? " (from " + entryPath.getCopyPath()
 											+ " revision " + entryPath.getCopyRevision() + ")" : ""));
 						}
-						// }
-						/*
-						 * if (encontrado &&
-						 * logEntry.getMessage().contains("GLPI")) {
-						 * System.out.println("revision: " +
-						 * logEntry.getRevision()); System.out.println(
-						 * "author: " + logEntry.getAuthor());
-						 * System.out.println("date: " + logEntry.getDate());
-						 * System.out.println("log message: " +
-						 * logEntry.getMessage()); }
-						 */
+
 					}
 				}
 			}
 		} catch (SVNException e) {
 			e.printStackTrace();
 		}
-
-		/*
-		 * SVNUpdateClient updateClient = clientManager.getUpdateClient();
-		 * updateClient.setIgnoreExternals(false);
-		 * 
-		 * for (Item item : items) {
-		 * 
-		 * try {
-		 * 
-		 * SVNURL url = SVNURL.parseURIEncoded(srcRepoURL +
-		 * item.getPath().get()); File path = new File(srcWorkingCopy +
-		 * item.getPath().get()); SVNRevision revision =
-		 * SVNRevision.parse(item.getRevision() .get());
-		 * updateClient.doExport(url, path, revision, revision, "native", true,
-		 * SVNDepth.INFINITY); item.getExported().set(true);
-		 * 
-		 * } catch (SVNException e) { LOGGER.error(e.getLocalizedMessage()); } }
-		 */
-
 		clientManager.dispose();
 	}
 

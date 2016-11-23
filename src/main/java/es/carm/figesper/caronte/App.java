@@ -4,6 +4,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
+//import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,7 +19,11 @@ import javax.swing.Timer;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.SimpleBooleanProperty;
+//import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -31,26 +37,28 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TableCell;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
 
 public class App extends Application {
 
@@ -97,7 +105,6 @@ public class App extends Application {
 	
 	private Properties properties;
 
-
 	// Componentes segunda pantalla
 
 	//private VBox topContainer2;
@@ -105,6 +112,7 @@ public class App extends Application {
 	//private File file2;
 
 	private MenuBar menuBar2;
+	
 
 	//private Label lblExcelPath;
 	//private TextField txtExcelPath;
@@ -134,8 +142,13 @@ public class App extends Application {
 	private FilteredList<Item> listaAExportar;
 	private List<Item> listaDependenciasDeTicketsASubir;
 	private List<String> listaRutasInsertadas;
-	private List<Item> listaComprobarRutas;//Esta es la lista que lee el excel para comprobar si las de listaPath son correctas
-	private List<String> listaPath;//Esta es la lista que se rellena en el path
+	private List<Item> listaComprobarRutas;
+	
+	private MenuBar menuBarOpciones;
+	private Menu menuPaso;
+	private Menu menuSync;
+	private MenuItem itmPaso;
+	private MenuItem itmSync;
 	
 
 	private boolean eventoFinalizado = true;
@@ -200,27 +213,56 @@ public class App extends Application {
 		VBox topContainer = new VBox();
 		root.setTop(topContainer);
 
+		root.setMaxHeight(25);
+		
 		menuBar = new MenuBar();
 		Menu menuGLPI = new Menu("GLPI");
 		menuBar.getMenus().add(menuGLPI);
-		topContainer.getChildren().addAll(menuBar);
-
-		BorderPane pnlOdsPath = new BorderPane();
-		pnlOdsPath.setPadding(new Insets(5));
-		root.setTop(pnlOdsPath);
-
+		
+		
+		menuBarOpciones = new MenuBar();
+		menuBarOpciones.prefWidthProperty().bind(primaryStage.widthProperty());
+		
+		root.setTop(menuBarOpciones);
+		
+		menuPaso = new Menu("Paso");
+		menuSync = new Menu("Sync");
+		
+		itmPaso = new MenuItem("Paso");
+		itmSync = new MenuItem("Sync");
+	
+		menuPaso.getItems().addAll(itmPaso);
+		menuSync.getItems().addAll(itmSync);
+		
+		menuBarOpciones.getMenus().addAll(menuPaso, menuSync);
+		
+		itmSync.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+            	initSync(root);
+            	lblOdsPath.setText("item");
+            }
+        });
+	
+		BorderPane pnlOdsPath = new BorderPane();//Contenedor de centralArriba y centralCentro
+		BorderPane centralArriba = new BorderPane();//para la barra del buscador
+		BorderPane centralCentro = new BorderPane();//para la lista de ficheros
+		
+		pnlOdsPath.setPadding(new Insets(1));
+		root.setCenter(pnlOdsPath);
+		
+		pnlOdsPath.setTop(centralArriba);
+		pnlOdsPath.setCenter(centralCentro);
+		
 		lblOdsPath = new Label("Seguimientos Tickets");
 		lblOdsPath.setPadding(new Insets(3, 5, 0, 0));
-		pnlOdsPath.setLeft(lblOdsPath);
-
+		centralArriba.setLeft(lblOdsPath);
+		
 		txtOdsPath = new TextField();
 		txtOdsPath.setEditable(false);
-		pnlOdsPath.setCenter(txtOdsPath);
+		centralArriba.setCenter(txtOdsPath);
 
 		btnOdsPath = new Button("...");
-		pnlOdsPath.setRight(btnOdsPath);
-
-		// service.history();
+		centralArriba.setRight(btnOdsPath);
 
 		btnOdsPath.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -242,7 +284,6 @@ public class App extends Application {
 						itemList.addAll(service.parse(file));
 						chkAll.setDisable(false);
 						chkAll.setSelected(false);
-
 					} catch (ServiceException e) {
 						Alert alert = new Alert(AlertType.ERROR);
 						alert.setTitle("Exception");
@@ -254,6 +295,7 @@ public class App extends Application {
 			}
 		});
 
+		
 		// --
 
 		tblItems = new TableView<Item>();
@@ -336,9 +378,10 @@ public class App extends Application {
 		tblItems.getColumns().add(validado);
 
 		tblItems.setItems(itemList);
-		root.setCenter(tblItems);
-
-		// --
+		
+		pnlOdsPath.setCenter(tblItems);
+		
+			// --
 
 		BorderPane pnlBottom = new BorderPane();
 		root.setBottom(pnlBottom);
@@ -389,18 +432,14 @@ public class App extends Application {
 			public void handle(ActionEvent event) {
 				//Aqui hay que volver a leer fichero y pintar los elementos en la ventana principal
 				
-				//for(itemLis)
 				itemList.removeAll(itemList);
 				
 				file = new File(properties.getProperty("svn.seguimiento.path") + "/"
 						+ "GLPI FIGESPER - CARM C.HACIENDA " + new SimpleDateFormat("yyyyMM").format(new Date()) + ".ods");
 
 				itemList.addAll(service.parse(file));
-			
 			}
 		});
-		
-		
 		pnlBottom.setLeft(pnlActions);
 
 		BorderPane pnlBottomRight = new BorderPane();
@@ -409,12 +448,10 @@ public class App extends Application {
 		pnlBottom.setCenter(pnlBottomRight);
 
 		lblMessage = new Label("Mensaje");
-		// lblMessage.setDisable(true);
 		lblMessage.setPadding(new Insets(3, 5, 0, 10));
 		pnlBottomRight.setLeft(lblMessage);
 
 		txtMessage = new TextField();
-		// txtMessage.setDisable(true);
 		pnlBottomRight.setCenter(txtMessage);
 
 		// Inicializamos la primera ventana con los valores del fichero de
@@ -436,16 +473,51 @@ public class App extends Application {
 		itemList.addAll(service.parse(file));
 		chkAll.setDisable(false);
 		chkAll.setSelected(false);
+	}
 
-		TextArea areaTextoConsola = new TextArea();
+	
+	
+	private void initSync(BorderPane root) {
 		
-		//Descomentar estas 4 lineas para que los mensajes aparezcan por consola
+		btnExtraer.setVisible(false);
+		btnActualizar.setVisible(false);
+		lblMessage.setVisible(false);
+		txtMessage.setVisible(false);
+		
+		TextArea areaTextoConsola = new TextArea();
+		BorderPane pnlBottom = new BorderPane();
+		root.setCenter(pnlBottom);
+		
+		//Comentar/Descomentar estas 4 lineas para que los mensajes desaparezcan/aparezcan por consola
 		//Console consola = new Console(areaTextoConsola);
 		//PrintStream ps = new PrintStream(consola, true);
 		//System.setOut(ps);
 		//System.setErr(ps);
-		pnlBottom.setBottom(areaTextoConsola);
+		pnlBottom.setCenter(areaTextoConsola);
 		
+		menuBarOpciones = new MenuBar();
+		menuBarOpciones.prefWidthProperty().bind(primaryStage.widthProperty());
+		
+		root.setTop(menuBarOpciones);
+		
+		menuPaso = new Menu("Paso");
+		menuSync = new Menu("Sync");
+		
+		itmPaso = new MenuItem("Paso");
+		itmSync = new MenuItem("Sync");
+	
+		menuPaso.getItems().addAll(itmPaso);
+		menuSync.getItems().addAll(itmSync);
+		
+		menuBarOpciones.getMenus().addAll(menuPaso, menuSync);
+		
+		menuPaso.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+            	initComponents(root);
+            	lblOdsPath.setText("item");
+            }
+        });
+	
 		lanzarHiloMercurio(areaTextoConsola);
 		
 		Platform.runLater(new Runnable() {
@@ -455,7 +527,8 @@ public class App extends Application {
 		    }
 		});
 	}
-
+	
+	
 	private void lanzarHiloMercurio(TextArea txtArea) {
 		Thread t = new Thread(() -> {
 			if (eventoFinalizado) {
@@ -591,6 +664,27 @@ public class App extends Application {
 		moved.prefWidthProperty().set(30);
 		tblItems2.getColumns().add(moved);
 
+		
+		listaComprobarRutas = service.leerPendienteAProduccion(0);//Aqui se leen las rutas de los ficheros para pasar a produccion
+		for (Item itemLista : itemList) {//Lista con los elementos a modificar
+			itemLista.setSelected(new SimpleBooleanProperty(false));
+			itemLista.setAnotado(new SimpleStringProperty("Path"));
+			for (Item itemExcel : listaComprobarRutas) { //Lista con los elementos de la excel "Pendiente paso a produccion"
+				if(itemExcel.getPath().toString().equalsIgnoreCase(itemLista.getPath().toString())){
+					itemLista.setAnotado(new SimpleStringProperty("Revisión"));
+					if(itemExcel.getRevision().toString().equalsIgnoreCase(itemLista.getRevision().toString())){
+						itemLista.setAnotado(new SimpleStringProperty(""));
+						itemLista.setSelected(new SimpleBooleanProperty(true));
+					}
+				}
+			}
+			if(itemLista.getGlpiDependiente()!=null){
+				if(!(itemLista.getGlpiDependiente().getValue().toString()).equalsIgnoreCase("")){
+					itemLista.setAnotado(new SimpleStringProperty(""));			
+				}
+			}
+		}
+		
 		TableColumn<Item, String> glpiDependiente = new TableColumn<Item, String>("GLPIs Dependientes");
 		glpiDependiente.setCellValueFactory(c -> c.getValue().getGlpiDependiente());
 		glpiDependiente.prefWidthProperty().set(250);
@@ -672,24 +766,25 @@ public class App extends Application {
 		
 		//listaDependenciasDeTicketsASubir//Lista del excel  pendiente produccion
 		
-		//Comprueba que tura y versión coinciden
-		
-		
-		listaComprobarRutas = service.leerPendienteAProduccion(0);//Aqui se lee las rutas de los ficheros para pasar a produccion
-
-		for (Item itemLista : itemList) {//Lista con los elementos a modificar
-			itemLista.setAnotado(new SimpleStringProperty("Path"));
-			for (Item itemExcel : listaComprobarRutas) { //Lista con los elementos de la excel "Pendiente paso a produccion"
-				if(itemExcel.getPath().toString().equalsIgnoreCase(itemLista.getPath().toString())){
-					//itemLista.setAnotado(new SimpleBooleanProperty(false));
-					itemLista.setAnotado(new SimpleStringProperty("Revisión"));
-					if(itemExcel.getRevision().toString().equalsIgnoreCase(itemLista.getRevision().toString())){
-						itemLista.setAnotado(new SimpleStringProperty(""));
+		//Comprueba que ruta y versión coinciden
+			
+		String num1, num2;
+				
+		for(int i=0; i<itemList.size()-1;++i ){//Bucle hecho para comprobar la mayor revision que haya en el excel
+			for(int j=i+1; j<itemList.size();++j){
+				if((itemList.get(i).getPath().getValue().toString().equalsIgnoreCase(itemList.get(j).getPath().getValue().toString()))){
+					num1=itemList.get(i).getRevision().getValue().toString();
+					num2=itemList.get(j).getRevision().getValue().toString();
+					if(Integer.parseInt(num1)>Integer.parseInt(num2)){
+						itemList.get(j).setSelected(new SimpleBooleanProperty(false));
+						itemList.get(j).setAnotado(new SimpleStringProperty(""));			
 					}
+					
 				}
 			}
 		}
-	
+		
+		
 		anotado.setCellValueFactory(c -> c.getValue().getAnotado());
 		anotado.setCellFactory(c -> {
 			return new TableCell<Item, String>() {
