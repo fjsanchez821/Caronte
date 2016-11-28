@@ -113,7 +113,7 @@ public class ServiceMercurio {
 	private Item totalizadorItem;
 
 	private List<Item> listaDependenciasDeTicketsASubir;
-	
+
 	private SVNLogEntry logEntry;
 
 	public SVNLogEntry getLogEntry() {
@@ -154,6 +154,8 @@ public class ServiceMercurio {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 
+		dstRepoUser = (String) properties.get("dst.repo.user");
+
 		svnInventoryPath = (String) properties.get("svn.inventory.path");
 
 		svnSeguimientoPath = (String) properties.get("svn.seguimiento.path");
@@ -165,7 +167,7 @@ public class ServiceMercurio {
 
 		dstWorkingCopy = (String) properties.get("dst.working.copy");
 		dstRepoURL = (String) properties.get("dst.repo.url");
-		dstRepoUser = (String) properties.get("dst.repo.user");
+
 		dstRepoPass = (String) properties.get("dst.repo.pass");
 
 		excelPasarCol = Integer.parseInt((String) properties.get("excel.pasar.col")) - 1;
@@ -186,7 +188,10 @@ public class ServiceMercurio {
 		odsInitRow = Integer.parseInt((String) properties.get("ods.initial.row")) - 1;
 
 		totalizadorItem = new Item(0);
+	}
 
+	public String getSrcRepoUser() {
+		return srcRepoUser;
 	}
 
 	public String getSvnInventoryPath() {
@@ -321,15 +326,17 @@ public class ServiceMercurio {
 			Collection<Object> logEntries = null;
 
 			logEntries = repository.log(new String[] { "" }, null, startRevision, endRevision, true, true);
-			//for (Iterator entries = logEntries.iterator(); entries.hasNext();) {
+			// for (Iterator entries = logEntries.iterator();
+			// entries.hasNext();) {
 			Iterator<Object> entries = logEntries.iterator();
-			if(entries.hasNext()) {
-				if(logEntry == null) {
+			if (entries.hasNext()) {
+				if (logEntry == null) {
 					logEntry = (SVNLogEntry) entries.next();
 				} else {
-					while(entries.hasNext()) {
+					while (entries.hasNext()) {
 						SVNLogEntry auxiliar = (SVNLogEntry) entries.next();
-						if(auxiliar.equals(logEntry)) break;
+						if (auxiliar.equals(logEntry))
+							break;
 					}
 					logEntry = (SVNLogEntry) entries.next();
 				}

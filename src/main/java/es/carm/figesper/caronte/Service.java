@@ -51,6 +51,8 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
+import com.sun.tools.internal.ws.processor.model.Response;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -723,135 +725,138 @@ public class Service {
 					// elegido ha sido: " + paso));
 					result.ifPresent(paso -> numPaso = Integer.valueOf(paso));
 
-					aplicacion.getPb().setProgress(aplicacion.getPb().getProgress() + 0.5);
-					aplicacion.getPi().setProgress(aplicacion.getPi().getProgress() + 0.5);
+					if (result.isPresent()) {
 
-					SimpleDateFormat formatoFechaConsecutiva = new SimpleDateFormat("yyyyMMdd");
-					String fechaPaso = formatoFechaConsecutiva.format(new Date());
+						aplicacion.getPb().setProgress(aplicacion.getPb().getProgress() + 0.5);
+						aplicacion.getPi().setProgress(aplicacion.getPi().getProgress() + 0.5);
 
-					String directorio = properties.getProperty("svn.inventory.path") + "/Paso " + numPaso + " "
-							+ fechaPaso;
+						SimpleDateFormat formatoFechaConsecutiva = new SimpleDateFormat("yyyyMMdd");
+						String fechaPaso = formatoFechaConsecutiva.format(new Date());
 
-					File dir = new File(directorio);
-					dir.mkdir();
+						String directorio = properties.getProperty("svn.inventory.path") + "/Paso " + numPaso + " "
+								+ fechaPaso;
 
-					aplicacion.getPb().setProgress(aplicacion.getPb().getProgress() + 0.25);
-					aplicacion.getPi().setProgress(aplicacion.getPi().getProgress() + 0.25);
+						File dir = new File(directorio);
+						dir.mkdir();
 
-					String fichero = "PaP " + numPaso + " " + fechaPaso + ".xlsx";
+						aplicacion.getPb().setProgress(aplicacion.getPb().getProgress() + 0.25);
+						aplicacion.getPi().setProgress(aplicacion.getPi().getProgress() + 0.25);
 
-					XSSFWorkbook libro = new XSSFWorkbook();
+						String fichero = "PaP " + numPaso + " " + fechaPaso + ".xlsx";
 
-					// Creamos las 3 hojas y generamos sus encabezados
-					XSSFSheet hoja = libro.createSheet("Ficheros");
-					generarCabecera(libro, hoja);
+						XSSFWorkbook libro = new XSSFWorkbook();
 
-					XSSFSheet hojaBBDD = libro.createSheet("BBDD");
-					generarCabeceraBBDD(libro, hojaBBDD);
+						// Creamos las 3 hojas y generamos sus encabezados
+						XSSFSheet hoja = libro.createSheet("Ficheros");
+						generarCabecera(libro, hoja);
 
-					XSSFSheet hojaOtros = libro.createSheet("Otros");
-					generarCabeceraOtros(libro, hojaOtros);
+						XSSFSheet hojaBBDD = libro.createSheet("BBDD");
+						generarCabeceraBBDD(libro, hojaBBDD);
 
-					numFilas = 2;
-					for (Item item : filteredList) {
-						Row fila = hoja.createRow(numFilas);
+						XSSFSheet hojaOtros = libro.createSheet("Otros");
+						generarCabeceraOtros(libro, hojaOtros);
 
-						Cell celda = fila.createCell(0);
-						CellStyle estilo = libro.createCellStyle();
-						estilo.setBorderBottom(CellStyle.BORDER_THIN);
-						estilo.setBorderTop(CellStyle.BORDER_THIN);
-						estilo.setBorderRight(CellStyle.BORDER_THIN);
-						estilo.setBorderLeft(CellStyle.BORDER_THIN);
-						celda.setCellStyle(estilo);
-						celda.setCellValue(item.getGlpi().getValue());
-						celda = fila.createCell(1);
-						celda.setCellStyle(estilo);
-						celda.setCellValue(item.getPath().getValue());
-						celda = fila.createCell(2);
-						celda.setCellStyle(estilo);
-						celda.setCellValue(item.getRevision().getValue());
-						celda = fila.createCell(3);
-						celda.setCellStyle(estilo);
-						celda.setCellValue(item.getAuthor().getValue());
-						numFilas++;
+						numFilas = 2;
+						for (Item item : filteredList) {
+							Row fila = hoja.createRow(numFilas);
 
-					}
+							Cell celda = fila.createCell(0);
+							CellStyle estilo = libro.createCellStyle();
+							estilo.setBorderBottom(CellStyle.BORDER_THIN);
+							estilo.setBorderTop(CellStyle.BORDER_THIN);
+							estilo.setBorderRight(CellStyle.BORDER_THIN);
+							estilo.setBorderLeft(CellStyle.BORDER_THIN);
+							celda.setCellStyle(estilo);
+							celda.setCellValue(item.getGlpi().getValue());
+							celda = fila.createCell(1);
+							celda.setCellStyle(estilo);
+							celda.setCellValue(item.getPath().getValue());
+							celda = fila.createCell(2);
+							celda.setCellStyle(estilo);
+							celda.setCellValue(item.getRevision().getValue());
+							celda = fila.createCell(3);
+							celda.setCellStyle(estilo);
+							celda.setCellValue(item.getAuthor().getValue());
+							numFilas++;
 
-					numFilas = 2;
-					for (Item item : listaBBDD) {
-						for (Item itemFicheros : filteredList) {
-							if (item.getGlpi().getValue().equals(itemFicheros.getGlpi().getValue())) {
-								Row fila = hojaBBDD.createRow(numFilas);
+						}
 
-								Cell celda = fila.createCell(0);
-								CellStyle estilo = libro.createCellStyle();
-								estilo.setBorderBottom(CellStyle.BORDER_THIN);
-								estilo.setBorderTop(CellStyle.BORDER_THIN);
-								estilo.setBorderRight(CellStyle.BORDER_THIN);
-								estilo.setBorderLeft(CellStyle.BORDER_THIN);
-								celda.setCellStyle(estilo);
-								celda.setCellValue(item.getGlpi().getValue());
-								celda = fila.createCell(1);
-								celda.setCellStyle(estilo);
-								celda.setCellValue(item.getPath().getValue());
-								celda = fila.createCell(2);
-								celda.setCellStyle(estilo);
-								celda.setCellValue(item.getRevision().getValue());
-								celda = fila.createCell(3);
-								celda.setCellStyle(estilo);
-								celda.setCellValue(item.getAuthor().getValue());
-								celda = fila.createCell(4);
-								numFilas++;
-								break;
+						numFilas = 2;
+						for (Item item : listaBBDD) {
+							for (Item itemFicheros : filteredList) {
+								if (item.getGlpi().getValue().equals(itemFicheros.getGlpi().getValue())) {
+									Row fila = hojaBBDD.createRow(numFilas);
+
+									Cell celda = fila.createCell(0);
+									CellStyle estilo = libro.createCellStyle();
+									estilo.setBorderBottom(CellStyle.BORDER_THIN);
+									estilo.setBorderTop(CellStyle.BORDER_THIN);
+									estilo.setBorderRight(CellStyle.BORDER_THIN);
+									estilo.setBorderLeft(CellStyle.BORDER_THIN);
+									celda.setCellStyle(estilo);
+									celda.setCellValue(item.getGlpi().getValue());
+									celda = fila.createCell(1);
+									celda.setCellStyle(estilo);
+									celda.setCellValue(item.getPath().getValue());
+									celda = fila.createCell(2);
+									celda.setCellStyle(estilo);
+									celda.setCellValue(item.getRevision().getValue());
+									celda = fila.createCell(3);
+									celda.setCellStyle(estilo);
+									celda.setCellValue(item.getAuthor().getValue());
+									celda = fila.createCell(4);
+									numFilas++;
+									break;
+								}
 							}
 						}
-					}
 
-					numFilas = 2;
-					for (Item item : listaOtros) {
-						System.out.println("wa");
-						for (Item itemFicheros : filteredList) {
-							System.out.println("we");
-							if (item.getGlpi().getValue().equals(itemFicheros.getGlpi().getValue())) {
-								System.out.println("wi");
-								Row fila = hojaOtros.createRow(numFilas);
+						numFilas = 2;
+						for (Item item : listaOtros) {
+							for (Item itemFicheros : filteredList) {
+								if (item.getGlpi().getValue().equals(itemFicheros.getGlpi().getValue())) {
+									Row fila = hojaOtros.createRow(numFilas);
 
-								Cell celda = fila.createCell(0);
-								CellStyle estilo = libro.createCellStyle();
-								estilo.setBorderBottom(CellStyle.BORDER_THIN);
-								estilo.setBorderTop(CellStyle.BORDER_THIN);
-								estilo.setBorderRight(CellStyle.BORDER_THIN);
-								estilo.setBorderLeft(CellStyle.BORDER_THIN);
-								celda.setCellStyle(estilo);
-								celda.setCellValue(item.getGlpi().getValue());
-								celda = fila.createCell(1);
-								celda.setCellStyle(estilo);
-								celda.setCellValue(item.getPath().getValue());
-								celda = fila.createCell(2);
-								celda.setCellStyle(estilo);
-								celda.setCellValue(item.getRevision().getValue());
-								celda = fila.createCell(3);
-								celda.setCellStyle(estilo);
-								celda.setCellValue(item.getAuthor().getValue());
-								celda = fila.createCell(4);
-								numFilas++;
-								break;
+									Cell celda = fila.createCell(0);
+									CellStyle estilo = libro.createCellStyle();
+									estilo.setBorderBottom(CellStyle.BORDER_THIN);
+									estilo.setBorderTop(CellStyle.BORDER_THIN);
+									estilo.setBorderRight(CellStyle.BORDER_THIN);
+									estilo.setBorderLeft(CellStyle.BORDER_THIN);
+									celda.setCellStyle(estilo);
+									celda.setCellValue(item.getGlpi().getValue());
+									celda = fila.createCell(1);
+									celda.setCellStyle(estilo);
+									celda.setCellValue(item.getPath().getValue());
+									celda = fila.createCell(2);
+									celda.setCellStyle(estilo);
+									celda.setCellValue(item.getRevision().getValue());
+									celda = fila.createCell(3);
+									celda.setCellStyle(estilo);
+									celda.setCellValue(item.getAuthor().getValue());
+									celda = fila.createCell(4);
+									numFilas++;
+									break;
+								}
 							}
 						}
+
+						hoja.autoSizeColumn(1); // Dejamos el autosize para la
+												// columna del
+												// fichero por si el nombre es
+												// más
+												// largo
+						FileOutputStream out = new FileOutputStream(new File(directorio + "/" + fichero));
+						libro.write(out);
+
+						out.close();
+
+						aplicacion.getPb().setProgress(aplicacion.getPb().getProgress() + 0.25);
+						aplicacion.getPi().setProgress(aplicacion.getPi().getProgress() + 0.25);
+						System.out.println("Excel escrito satisfactoriamente...");
+					} else {
+						aplicacion.getPb().setProgress(1);
 					}
-
-					hoja.autoSizeColumn(1); // Dejamos el autosize para la
-											// columna del
-											// fichero por si el nombre es más
-											// largo
-					FileOutputStream out = new FileOutputStream(new File(directorio + "/" + fichero));
-					libro.write(out);
-
-					out.close();
-
-					aplicacion.getPb().setProgress(aplicacion.getPb().getProgress() + 0.25);
-					aplicacion.getPi().setProgress(aplicacion.getPi().getProgress() + 0.25);
-					System.out.println("Excel escrito satisfactoriamente...");
 				} catch (Exception e) {
 					LOGGER.error(e.getLocalizedMessage(), e);
 				}

@@ -3,7 +3,6 @@ package es.carm.figesper.caronte;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.css.SimpleStyleableBooleanProperty;
 
 public class Item {
 
@@ -24,12 +23,12 @@ public class Item {
 	private SimpleStringProperty validado;
 	private SimpleBooleanProperty newItem;
 	private SimpleIntegerProperty totalFicheros;
-	private SimpleStringProperty anotado; //Marca si está en ambos excels 
-	
+	private SimpleStringProperty anotado; // Marca si está en ambos excels
+
 	private SimpleStringProperty desarrollo;
 	private SimpleStringProperty pruebas;
 	private SimpleStringProperty rutaSVN;
-	
+
 	// Dependencia (Si existe)
 	private SimpleStringProperty revisionDependiente;
 	private SimpleStringProperty glpiDependiente;
@@ -72,9 +71,9 @@ public class Item {
 		this.selected = new SimpleBooleanProperty(false);
 		this.newItem = new SimpleBooleanProperty(false);
 	}
-	
-	//Item para BBDD
-	public Item(String glpi, String path, String revision, String autor, String desarrollo, String pruebas){
+
+	// Item para BBDD
+	public Item(String glpi, String path, String revision, String autor, String desarrollo, String pruebas) {
 		this.glpi = new SimpleStringProperty(glpi);
 		this.path = new SimpleStringProperty(path);
 		this.revision = new SimpleStringProperty(revision);
@@ -83,9 +82,10 @@ public class Item {
 		this.pruebas = new SimpleStringProperty(pruebas);
 		this.newItem = new SimpleBooleanProperty(false);
 	}
-	
-	//Item para otros
-	public Item(String glpi, String path, String revision, String autor, String desarrollo, String pruebas, String rutaSVN){
+
+	// Item para otros
+	public Item(String glpi, String path, String revision, String autor, String desarrollo, String pruebas,
+			String rutaSVN) {
 		this.glpi = new SimpleStringProperty(glpi);
 		this.path = new SimpleStringProperty(path);
 		this.revision = new SimpleStringProperty(revision);
@@ -95,7 +95,6 @@ public class Item {
 		this.rutaSVN = new SimpleStringProperty(rutaSVN);
 		this.newItem = new SimpleBooleanProperty(false);
 	}
-	
 
 	public Item(Integer total) {
 		this.glpi = new SimpleStringProperty("Total Ficheros");
@@ -256,6 +255,7 @@ public class Item {
 	public void setTotalFicheros(SimpleIntegerProperty totalFicheros) {
 		this.totalFicheros = totalFicheros;
 	}
+
 	public SimpleStringProperty getAnotado() {
 		return anotado;
 	}
@@ -288,5 +288,4 @@ public class Item {
 		this.rutaSVN = rutaSVN;
 	}
 
-	
 }
