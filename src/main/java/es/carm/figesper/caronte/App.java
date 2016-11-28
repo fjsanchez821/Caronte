@@ -702,13 +702,14 @@ public class App extends Application {
 
 		for (Item itemLista : itemList) {
 			for (Item itemAux : itemList) {
-				if ((itemLista.getSelected() != null) && (itemAux.getSelected() != null)) {
-					if (Integer.parseInt(itemLista.getRevision().getValue()) > Integer
-							.parseInt(itemAux.getRevision().getValue())) {
-						itemLista.setSelected(new SimpleBooleanProperty(true));
-						itemAux.setSelected(new SimpleBooleanProperty(false));
+					if (itemLista.getPath().equals(itemAux.getPath())) {
+						if (Integer.parseInt(itemLista.getRevision().getValue()) > Integer
+								.parseInt(itemAux.getRevision().getValue())) {
+							System.out.println("Dentro2");
+							itemLista.setSelected(new SimpleBooleanProperty(true));
+							itemAux.setSelected(new SimpleBooleanProperty(false));
+						}
 					}
-				}
 			}
 		}
 
