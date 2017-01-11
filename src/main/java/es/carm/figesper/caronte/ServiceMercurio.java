@@ -37,6 +37,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.util.ArrayUtil;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -60,7 +61,10 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusClient;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
+import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
+
+import com.sun.tools.javac.util.ArrayUtils;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -357,12 +361,13 @@ public class ServiceMercurio {
 						String path = entryPath.getPath().substring(10);
 						Item item = new Item(path, String.valueOf(logEntry.getRevision()));
 						item.getAuthor().set(logEntry.getAuthor());
+						item.getTipoSVN().set(String.valueOf(entryPath.getType()));
 						ficheros.put(entryPath.getPath(), item);
 					}
 				}
 				// }
 				for (Entry<String, Item> fichero : ficheros.entrySet()) {
-					System.out.println(" " + fichero.getValue().getGlpi() + " " + fichero.getValue().getPath() + " "
+					System.out.println(" " + fichero.getValue().getTipoSVN() + " " + fichero.getValue().getPath() + " "
 							+ fichero.getValue().getRevision() + " " + fichero.getValue().getAuthor());
 				}
 				totalizadorItem.getTotalFicheros().set(totalizadorItem.getTotalFicheros().get() + ficheros.size());
@@ -379,57 +384,6 @@ public class ServiceMercurio {
 			clientManager.dispose();
 		}
 
-	}
-
-	@SuppressWarnings("unchecked")
-	public void history() {
-
-		DefaultSVNOptions options = new DefaultSVNOptions();
-		SVNClientManager clientManager = SVNClientManager.newInstance(options, srcRepoUser, srcRepoPass);
-
-		long startRevision = 17400;
-		long endRevision = -1; // HEAD (the latest) revision
-
-		SVNRepository repository = null;
-
-		try {
-			repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(srcRepoURL));
-
-			ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(srcRepoUser,
-					srcRepoPass.toCharArray());
-
-			repository.setAuthenticationManager(authManager);
-
-			Collection<Object> logEntries = null;
-
-			logEntries = repository.log(new String[] { "" }, null, startRevision, endRevision, true, true);
-			for (Iterator<Object> entries = logEntries.iterator(); entries.hasNext();) {
-				SVNLogEntry logEntry = (SVNLogEntry) entries.next();
-				if (logEntry.getMessage().contains("272524")) {
-					System.out.println("---------------------------------------------");
-					System.out.println("revision: " + logEntry.getRevision());
-					System.out.println("author: " + logEntry.getAuthor());
-					System.out.println("date: " + logEntry.getDate());
-					System.out.println("log message: " + logEntry.getMessage());
-
-					if (logEntry.getChangedPaths().size() > 0) {
-						Set<String> changedPathsSet = logEntry.getChangedPaths().keySet();
-
-						for (Iterator<String> changedPaths = changedPathsSet.iterator(); changedPaths.hasNext();) {
-							SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntry.getChangedPaths()
-									.get(changedPaths.next());
-							System.out.println(" " + entryPath.getType() + " " + entryPath.getPath()
-									+ ((entryPath.getCopyPath() != null) ? " (from " + entryPath.getCopyPath()
-											+ " revision " + entryPath.getCopyRevision() + ")" : ""));
-						}
-					}
-				}
-			}
-		} catch (SVNException e) {
-			e.printStackTrace();
-		}
-
-		clientManager.dispose();
 	}
 
 	public void export(List<Item> items) {
@@ -458,30 +412,12 @@ public class ServiceMercurio {
 		clientManager.dispose();
 	}
 
-	public void move(Collection<Item> items) {
-
-		for (Item item : items) {
-
-			try {
-
-				Path srcPath = FileSystems.getDefault().getPath(srcWorkingCopy + item.getPath().get());
-				Path dstPath = FileSystems.getDefault().getPath(dstWorkingCopy + item.getPath().get());
-				if (Files.exists(dstPath, LinkOption.NOFOLLOW_LINKS)) {
-					Files.setAttribute(dstPath, "dos:readonly", false);
-				}
-				Files.move(srcPath, dstPath, StandardCopyOption.REPLACE_EXISTING);
-				item.getMoved().set(true);
-
-			} catch (IOException e) {
-				LOGGER.error(e.getLocalizedMessage());
-			}
-		}
-	}
-
 	public void commit(List<Item> items, String message) throws ServiceException {
 
 		DefaultSVNOptions options = new DefaultSVNOptions();
 		SVNClientManager clientManager = SVNClientManager.newInstance(options, dstRepoUser, dstRepoPass);
+
+		SVNWCClient sVNWCClient = clientManager.getWCClient();
 
 		SVNStatusClient statusClient = clientManager.getStatusClient();
 		statusClient.setIgnoreExternals(true);
@@ -489,36 +425,42 @@ public class ServiceMercurio {
 		SVNCommitClient commitClient = clientManager.getCommitClient();
 		commitClient.setIgnoreExternals(false);
 
-		File[] paths = new File[items.size()];
+		List<File> ficheros = new ArrayList<File>(items.size());
 
 		for (int p = 0; p < items.size(); p++) {
 
 			File path = new File(dstWorkingCopy + items.get(p).getPath().get().replaceAll("fgGesper", "figesper"));
-			SVNStatus estado = null;
-			try {
-				estado = statusClient.doStatus(path, false);
-			} catch (SVNException e1) {
-				e1.printStackTrace();
-			}
+
 			if (!isCritico(path.getPath())) {
-				if (!estado.isVersioned()) {
+				String tipo = items.get(p).getTipoSVN().get();
+				if (tipo != null && tipo.equals("D")) {
+					if (path.exists()) {
+						try {
+							sVNWCClient.doDelete(path, false, false);
+						} catch (SVNException e) {
+							e.printStackTrace();
+						}
+						ficheros.add(path);
+					}
+				} else if (tipo != null && tipo.equals("A")) {
 					try {
-						SVNCommitInfo info = commitClient.doImport(path,
-								SVNURL.parseURIEncoded(
-										dstRepoURL + items.get(p).getPath().get().replaceAll("fgGesper", "figesper")),
-								message, null, false, true, SVNDepth.INFINITY);
-					} catch (SVNException | EmptyStackException e) {
+						sVNWCClient.doAdd(path, false, false, false, SVNDepth.INFINITY, false, false);
+					} catch (SVNException e) {
 						e.printStackTrace();
 					}
-
+					ficheros.add(path);
+				} else {
+					ficheros.add(path);
 				}
-				paths[p] = path;
 			}
 		}
 
 		try {
 
-			commitClient.doCommit(paths, false, message, null, null, false, true, SVNDepth.INFINITY);
+			commitClient.doCommit(ficheros.toArray(new File[ficheros.size()]), false, message, null, null, false, true,
+					SVNDepth.INFINITY);
+
+			logEntry = null;
 
 			properties.setProperty("ultima.revision.subida", items.get(0).getRevision().get());
 			File f = new File("./src/main/resources/mercurio.properties");

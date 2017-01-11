@@ -24,6 +24,7 @@ public class Item {
 	private SimpleBooleanProperty newItem;
 	private SimpleIntegerProperty totalFicheros;
 	private SimpleStringProperty anotado; // Marca si está en ambos excels
+	private SimpleStringProperty tipoSVN; // Indica el tipo de acción llevada a cabo en SVN (A (add), M (modify), D (delete)...)
 
 	private SimpleStringProperty desarrollo;
 	private SimpleStringProperty pruebas;
@@ -43,6 +44,7 @@ public class Item {
 		this.glpi = new SimpleStringProperty("");
 		this.author = new SimpleStringProperty("");
 		this.newItem = new SimpleBooleanProperty(false);
+		this.tipoSVN = new SimpleStringProperty("");
 	}
 
 	public Item(String glpi, String path, String revision, String author) {
@@ -55,6 +57,7 @@ public class Item {
 		this.glpi = new SimpleStringProperty(glpi);
 		this.author = new SimpleStringProperty(author);
 		this.newItem = new SimpleBooleanProperty(false);
+		this.tipoSVN = new SimpleStringProperty("");
 	}
 
 	public Item(String glpi, String titulo, String asignado, String tipo, String vencimiento, String responsable,
@@ -70,6 +73,7 @@ public class Item {
 		this.validado = new SimpleStringProperty(validado);
 		this.selected = new SimpleBooleanProperty(false);
 		this.newItem = new SimpleBooleanProperty(false);
+		this.tipoSVN = new SimpleStringProperty("");
 	}
 
 	// Item para BBDD
@@ -81,6 +85,7 @@ public class Item {
 		this.desarrollo = new SimpleStringProperty(desarrollo);
 		this.pruebas = new SimpleStringProperty(pruebas);
 		this.newItem = new SimpleBooleanProperty(false);
+		this.tipoSVN = new SimpleStringProperty("");
 	}
 
 	// Item para otros
@@ -94,6 +99,7 @@ public class Item {
 		this.pruebas = new SimpleStringProperty(pruebas);
 		this.rutaSVN = new SimpleStringProperty(rutaSVN);
 		this.newItem = new SimpleBooleanProperty(false);
+		this.tipoSVN = new SimpleStringProperty("");
 	}
 
 	public Item(Integer total) {
@@ -102,6 +108,7 @@ public class Item {
 		this.path = new SimpleStringProperty("");
 		this.selected = new SimpleBooleanProperty(false);
 		this.newItem = new SimpleBooleanProperty(false);
+		this.tipoSVN = new SimpleStringProperty("");
 	}
 
 	public SimpleBooleanProperty getSelected() {
@@ -286,6 +293,14 @@ public class Item {
 
 	public void setRutaSVN(SimpleStringProperty rutaSVN) {
 		this.rutaSVN = rutaSVN;
+	}
+
+	public SimpleStringProperty getTipoSVN() {
+		return tipoSVN;
+	}
+
+	public void setTipoSVN(SimpleStringProperty tipoSVN) {
+		this.tipoSVN = tipoSVN;
 	}
 
 }
