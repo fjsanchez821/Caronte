@@ -63,19 +63,18 @@ import javafx.scene.control.TextInputDialog;
 public class Service {
 
 	private static final Logger LOGGER = Logger.getLogger(Service.class);
+	
+	private String repoUser;
+	private String repoPass;
 
 	private String svnInventoryPath;
 	private String svnSeguimientoPath;
 
 	private String srcWorkingCopy;
 	private String srcRepoURL;
-	private String srcRepoUser;
-	private String srcRepoPass;
 
 	private String dstWorkingCopy;
 	private String dstRepoURL;
-	private String dstRepoUser;
-	private String dstRepoPass;
 
 	private int excelPasarCol;
 	private int excelPathCol;
@@ -136,6 +135,9 @@ public class Service {
 			LOGGER.error(e.getLocalizedMessage(), e);
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
+		
+		repoUser = (String) properties.get("repo.user");
+		repoPass = (String) properties.get("repo.pass");
 
 		svnInventoryPath = (String) properties.get("svn.inventory.path");
 
@@ -143,13 +145,9 @@ public class Service {
 
 		srcWorkingCopy = (String) properties.get("src.working.copy");
 		srcRepoURL = (String) properties.get("src.repo.url");
-		srcRepoUser = (String) properties.get("src.repo.user");
-		srcRepoPass = (String) properties.get("src.repo.pass");
 
 		dstWorkingCopy = (String) properties.get("dst.working.copy");
 		dstRepoURL = (String) properties.get("dst.repo.url");
-		dstRepoUser = (String) properties.get("dst.repo.user");
-		dstRepoPass = (String) properties.get("dst.repo.pass");
 
 		excelPasarCol = Integer.parseInt((String) properties.get("excel.pasar.col")) - 1;
 		excelPathCol = Integer.parseInt((String) properties.get("excel.path.col")) - 1;
@@ -869,7 +867,7 @@ public class Service {
 	public HashMap<String, Item> extraer(String glpi) {
 
 		DefaultSVNOptions options = new DefaultSVNOptions();
-		SVNClientManager clientManager = SVNClientManager.newInstance(options, srcRepoUser, srcRepoPass);
+		SVNClientManager clientManager = SVNClientManager.newInstance(options, repoUser, repoPass);
 
 		long startRevision = 17000;
 		long endRevision = -1; // HEAD (the latest) revision
@@ -881,8 +879,8 @@ public class Service {
 		try {
 			repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(srcRepoURL));
 
-			ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(srcRepoUser,
-					srcRepoPass.toCharArray());
+			ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(repoUser,
+					repoPass.toCharArray());
 
 			repository.setAuthenticationManager(authManager);
 
@@ -931,7 +929,7 @@ public class Service {
 	public void history() {
 
 		DefaultSVNOptions options = new DefaultSVNOptions();
-		SVNClientManager clientManager = SVNClientManager.newInstance(options, srcRepoUser, srcRepoPass);
+		SVNClientManager clientManager = SVNClientManager.newInstance(options, repoUser, repoPass);
 
 		long startRevision = 17400;
 		long endRevision = -1; // HEAD (the latest) revision
@@ -941,8 +939,8 @@ public class Service {
 		try {
 			repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(srcRepoURL));
 
-			ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(srcRepoUser,
-					srcRepoPass.toCharArray());
+			ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(repoUser,
+					repoPass.toCharArray());
 
 			repository.setAuthenticationManager(authManager);
 
@@ -983,7 +981,7 @@ public class Service {
 	public void export(List<Item> items) {
 
 		DefaultSVNOptions options = new DefaultSVNOptions();
-		SVNClientManager clientManager = SVNClientManager.newInstance(options, srcRepoUser, srcRepoPass);
+		SVNClientManager clientManager = SVNClientManager.newInstance(options, repoUser, repoPass);
 
 		SVNUpdateClient updateClient = clientManager.getUpdateClient();
 		updateClient.setIgnoreExternals(false);
@@ -1029,7 +1027,7 @@ public class Service {
 	public void commit(List<Item> items, String message) throws ServiceException {
 
 		DefaultSVNOptions options = new DefaultSVNOptions();
-		SVNClientManager clientManager = SVNClientManager.newInstance(options, dstRepoUser, dstRepoPass);
+		SVNClientManager clientManager = SVNClientManager.newInstance(options, repoUser, repoPass);
 
 		SVNCommitClient commitClient = clientManager.getCommitClient();
 		commitClient.setIgnoreExternals(false);
@@ -1052,5 +1050,17 @@ public class Service {
 		}
 
 		clientManager.dispose();
+	}
+
+	public String getRepoUser() {
+		return repoUser;
+	}
+
+	public String getRepoPass() {
+		return repoPass;
+	}
+
+	public String getSrcRepoURL() {
+		return srcRepoURL;
 	}
 }

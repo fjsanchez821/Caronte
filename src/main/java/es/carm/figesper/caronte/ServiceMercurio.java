@@ -1,50 +1,29 @@
 package es.carm.figesper.caronte;
 
 import java.io.BufferedReader;
-import java.io.Console;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.CharBuffer;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.util.ArrayUtil;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
-import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
@@ -52,66 +31,29 @@ import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions;
-import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNCommitClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
-import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusClient;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
-import com.sun.tools.javac.util.ArrayUtils;
-
-import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.transformation.FilteredList;
-import javafx.scene.control.TextInputDialog;
 
 @SuppressWarnings("unused")
 public class ServiceMercurio {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceMercurio.class);
 
-	private String svnInventoryPath;
-	private String svnSeguimientoPath;
+	private Service servicio;
 
-	private String srcWorkingCopy;
-	private String srcRepoURL;
-	private String srcRepoUser;
-	private String srcRepoPass;
-
-	private String dstWorkingCopy;
-	private String dstRepoURL;
-	private String dstRepoUser;
-	private String dstRepoPass;
-
-	private int excelPasarCol;
-	private int excelPathCol;
-	private int excelRevisionCol;
-	private int excelInitRow;
-
-	private int odsPasarCol;
-	private int odsGlpiCol;
-	private int odsTituloCol;
-	private int odsAsignadoCol;
-	private int odsTipoCol;
-	private int odsVencimientoCol;
-	private int odsResponsableCol;
-	private int odsEstadoCol;
-	private int odsEntornoCol;
-	private int odsValidadoCol;
-	private int odsInitRow;
-
+	private String workingCopy;
+	
 	private ClassLoader classLoader;
 	private Properties properties;
-
-	private int numFilas;
-	private int numPaso;
 
 	private App aplicacion;
 	private Item totalizadorItem;
@@ -144,7 +86,9 @@ public class ServiceMercurio {
 		this.aplicacion = aplicacion;
 	}
 
-	public ServiceMercurio() throws ServiceException {
+	public ServiceMercurio(Service servicio) throws ServiceException {
+
+		this.servicio = servicio;
 
 		properties = new Properties();
 
@@ -158,128 +102,9 @@ public class ServiceMercurio {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 
-		dstRepoUser = (String) properties.get("dst.repo.user");
-
-		svnInventoryPath = (String) properties.get("svn.inventory.path");
-
-		svnSeguimientoPath = (String) properties.get("svn.seguimiento.path");
-
-		srcWorkingCopy = (String) properties.get("src.working.copy");
-		srcRepoURL = (String) properties.get("src.repo.url");
-		srcRepoUser = (String) properties.get("src.repo.user");
-		srcRepoPass = (String) properties.get("src.repo.pass");
-
-		dstWorkingCopy = (String) properties.get("dst.working.copy");
-		dstRepoURL = (String) properties.get("dst.repo.url");
-
-		dstRepoPass = (String) properties.get("dst.repo.pass");
-
-		excelPasarCol = Integer.parseInt((String) properties.get("excel.pasar.col")) - 1;
-		excelPathCol = Integer.parseInt((String) properties.get("excel.path.col")) - 1;
-		excelRevisionCol = Integer.parseInt((String) properties.get("excel.revision.col")) - 1;
-		excelInitRow = Integer.parseInt((String) properties.get("excel.initial.row")) - 1;
-
-		odsPasarCol = Integer.parseInt((String) properties.get("ods.pasar.col")) - 1;
-		odsGlpiCol = Integer.parseInt((String) properties.get("ods.glpi.col")) - 1;
-		odsTituloCol = Integer.parseInt((String) properties.get("ods.titulo.col")) - 1;
-		odsAsignadoCol = Integer.parseInt((String) properties.get("ods.asignado.col")) - 1;
-		odsTipoCol = Integer.parseInt((String) properties.get("ods.tipo.col")) - 1;
-		odsVencimientoCol = Integer.parseInt((String) properties.get("ods.vencimiento.col")) - 1;
-		odsResponsableCol = Integer.parseInt((String) properties.get("ods.responsable.col")) - 1;
-		odsEstadoCol = Integer.parseInt((String) properties.get("ods.estado.col")) - 1;
-		odsEntornoCol = Integer.parseInt((String) properties.get("ods.entorno.col")) - 1;
-		odsValidadoCol = Integer.parseInt((String) properties.get("ods.validado.col")) - 1;
-		odsInitRow = Integer.parseInt((String) properties.get("ods.initial.row")) - 1;
+		workingCopy = (String) properties.get("working.copy");
 
 		totalizadorItem = new Item(0);
-	}
-
-	public String getSrcRepoUser() {
-		return srcRepoUser;
-	}
-
-	public String getSvnInventoryPath() {
-		return svnInventoryPath;
-	}
-
-	public String getSvnSeguimientoPath() {
-		return svnSeguimientoPath;
-	}
-
-	public List<Item> parse(File file) throws ServiceException {
-
-		List<Item> items = new ArrayList<Item>();
-
-		try {
-
-			String extension = FilenameUtils.getExtension(file.getPath());
-			if (extension.equals("xlsx")) {
-				XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(file));
-
-				XSSFSheet sheet = workbook.getSheetAt(0);
-
-				for (Row row : sheet) {
-
-					if (row.getRowNum() < excelInitRow) {
-						continue;
-					}
-
-					String path = row.getCell(excelPathCol).getStringCellValue();
-					Double revision = row.getCell(excelRevisionCol).getNumericCellValue();
-
-					if (path.isEmpty()) {
-						break;
-					}
-
-					items.add(new Item(path, String.valueOf(revision.intValue())));
-				}
-
-				workbook.close();
-			} else {
-				SpreadsheetDocument sheetDocument = SpreadsheetDocument.loadDocument(file);
-				Table sheet = sheetDocument.getSheetByIndex(0);
-				Iterator<org.odftoolkit.simple.table.Row> iterator = sheet.getRowIterator();
-				while (iterator.hasNext()) {
-					org.odftoolkit.simple.table.Row row = iterator.next();
-
-					if (row.getRowIndex() < odsInitRow) {
-						continue;
-					}
-					String glpi = row.getCellByIndex(odsGlpiCol).getStringValue();
-					if (glpi.isEmpty()) {
-						break;
-					}
-					String titulo = row.getCellByIndex(odsTituloCol).getStringValue();
-					String asignado = row.getCellByIndex(odsAsignadoCol).getStringValue();
-					String estado = row.getCellByIndex(odsEstadoCol).getStringValue();
-					String entorno = row.getCellByIndex(odsEntornoCol).getStringValue();
-					String validado = row.getCellByIndex(odsValidadoCol).getStringValue();
-					String tipo = row.getCellByIndex(odsTipoCol).getStringValue();
-					String vencimiento = row.getCellByIndex(odsVencimientoCol).getStringValue();
-					String responsable = row.getCellByIndex(odsResponsableCol).getStringValue();
-					String pasar = row.getCellByIndex(odsPasarCol).getStringValue();
-
-					Item item = new Item(glpi, titulo, asignado, tipo, vencimiento, responsable, estado, entorno,
-							validado);
-					if (pasar.equals("S"))
-						item.setSelected(new SimpleBooleanProperty(true));
-
-					items.add(item);
-
-				}
-
-			}
-
-		} catch (Exception e) {
-			LOGGER.error(e.getLocalizedMessage(), e);
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-
-		return items;
-	}
-
-	private boolean isParaPasar(String glpi, HashMap<String, HashMap<String, Item>> ficherosExtraidos) {
-		return ficherosExtraidos.keySet().contains(glpi);
 	}
 
 	public boolean isCritico(String path) {
@@ -310,7 +135,8 @@ public class ServiceMercurio {
 	public HashMap<String, Item> extraer() {
 
 		DefaultSVNOptions options = new DefaultSVNOptions();
-		SVNClientManager clientManager = SVNClientManager.newInstance(options, srcRepoUser, srcRepoPass);
+		SVNClientManager clientManager = SVNClientManager.newInstance(options, servicio.getRepoUser(),
+				servicio.getRepoPass());
 
 		long startRevision = Long.valueOf(properties.getProperty("ultima.revision.subida").toString()) + 1;
 		long endRevision = -1; // HEAD (the latest) revision
@@ -320,18 +146,16 @@ public class ServiceMercurio {
 		HashMap<String, Item> ficheros = new HashMap<String, Item>();
 
 		try {
-			repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(srcRepoURL));
+			repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(servicio.getSrcRepoURL()));
 
-			ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(srcRepoUser,
-					srcRepoPass.toCharArray());
+			ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(servicio.getRepoUser(),
+					servicio.getRepoPass().toCharArray());
 
 			repository.setAuthenticationManager(authManager);
 
 			Collection<Object> logEntries = null;
 
 			logEntries = repository.log(new String[] { "" }, null, startRevision, endRevision, true, true);
-			// for (Iterator entries = logEntries.iterator();
-			// entries.hasNext();) {
 			Iterator<Object> entries = logEntries.iterator();
 			if (entries.hasNext()) {
 				if (logEntry == null) {
@@ -389,7 +213,8 @@ public class ServiceMercurio {
 	public void export(List<Item> items) {
 
 		DefaultSVNOptions options = new DefaultSVNOptions();
-		SVNClientManager clientManager = SVNClientManager.newInstance(options, srcRepoUser, srcRepoPass);
+		SVNClientManager clientManager = SVNClientManager.newInstance(options, servicio.getRepoUser(),
+				servicio.getRepoPass());
 
 		SVNUpdateClient updateClient = clientManager.getUpdateClient();
 		updateClient.setIgnoreExternals(false);
@@ -398,8 +223,8 @@ public class ServiceMercurio {
 
 			try {
 
-				SVNURL url = SVNURL.parseURIEncoded(srcRepoURL + item.getPath().get());
-				File path = new File(srcWorkingCopy + item.getPath().get().replaceAll("fgGesper", "figesper"));
+				SVNURL url = SVNURL.parseURIEncoded(servicio.getSrcRepoURL() + item.getPath().get());
+				File path = new File(workingCopy + item.getPath().get().replaceAll("fgGesper", "figesper"));
 				SVNRevision revision = SVNRevision.parse(item.getRevision().get());
 				updateClient.doExport(url, path, revision, revision, "native", true, SVNDepth.INFINITY);
 				item.getExported().set(true);
@@ -415,7 +240,8 @@ public class ServiceMercurio {
 	public void commit(List<Item> items, String message) throws ServiceException {
 
 		DefaultSVNOptions options = new DefaultSVNOptions();
-		SVNClientManager clientManager = SVNClientManager.newInstance(options, dstRepoUser, dstRepoPass);
+		SVNClientManager clientManager = SVNClientManager.newInstance(options, servicio.getRepoUser(),
+				servicio.getRepoPass());
 
 		SVNWCClient sVNWCClient = clientManager.getWCClient();
 
@@ -429,7 +255,7 @@ public class ServiceMercurio {
 
 		for (int p = 0; p < items.size(); p++) {
 
-			File path = new File(dstWorkingCopy + items.get(p).getPath().get().replaceAll("fgGesper", "figesper"));
+			File path = new File(workingCopy + items.get(p).getPath().get().replaceAll("fgGesper", "figesper"));
 
 			if (!isCritico(path.getPath())) {
 				String tipo = items.get(p).getTipoSVN().get();

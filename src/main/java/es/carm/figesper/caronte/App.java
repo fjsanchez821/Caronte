@@ -62,7 +62,7 @@ public class App extends Application {
 	private Service service;
 	private HashMap<String, HashMap<String, Item>> ficherosExtraidos;
 
-	ServiceMercurio servicioMercurio = new ServiceMercurio();
+	ServiceMercurio servicioMercurio;
 	private HashMap<String, Item> ficherosMercurio;
 
 	private Stage primaryStage; // Contenedor principal de las pantallas
@@ -173,6 +173,7 @@ public class App extends Application {
 	public App() {
 		service = new Service();
 		service.setAplicacion(this);
+		servicioMercurio = new ServiceMercurio(service);
 		ficherosExtraidos = new HashMap<String, HashMap<String, Item>>();
 	}
 
@@ -525,7 +526,7 @@ public class App extends Application {
 	}
 
 	private void lanzarHiloMercurio(TextArea txtArea) {
-		if (servicioMercurio.getSrcRepoUser().equals("pgm18e")) {
+		if (service.getRepoUser().equals("pgm18e")) {
 			Thread t = new Thread(() -> {
 				if (eventoFinalizado) {
 					ficherosMercurio = servicioMercurio.extraer();
@@ -545,7 +546,7 @@ public class App extends Application {
 			this.txtArea = txtArea;
 			txtArea.addEventHandler(KeyEvent.KEY_RELEASED, keyEvent -> {
 				try {
-					if (servicioMercurio.getSrcRepoUser().equals("pgm18e")) {
+					if (service.getRepoUser().equals("pgm18e")) {
 						switch (keyEvent.getCode()) {
 						case ENTER:
 							String cadena = txtArea.getText().replaceAll("\n", "");
@@ -702,14 +703,14 @@ public class App extends Application {
 
 		for (Item itemLista : itemList) {
 			for (Item itemAux : itemList) {
-					if (itemLista.getPath().equals(itemAux.getPath())) {
-						if (Integer.parseInt(itemLista.getRevision().getValue()) > Integer
-								.parseInt(itemAux.getRevision().getValue())) {
-							System.out.println("Dentro2");
-							itemLista.setSelected(new SimpleBooleanProperty(true));
-							itemAux.setSelected(new SimpleBooleanProperty(false));
-						}
+				if (itemLista.getPath().equals(itemAux.getPath())) {
+					if (Integer.parseInt(itemLista.getRevision().getValue()) > Integer
+							.parseInt(itemAux.getRevision().getValue())) {
+						System.out.println("Dentro2");
+						itemLista.setSelected(new SimpleBooleanProperty(true));
+						itemAux.setSelected(new SimpleBooleanProperty(false));
 					}
+				}
 			}
 		}
 
