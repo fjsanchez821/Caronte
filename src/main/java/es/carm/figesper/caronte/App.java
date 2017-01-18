@@ -62,7 +62,6 @@ public class App extends Application {
 	private Service service;
 	private HashMap<String, HashMap<String, Item>> ficherosExtraidos;
 
-	ServiceMercurio servicioMercurio;
 	private HashMap<String, Item> ficherosMercurio;
 
 	private Stage primaryStage; // Contenedor principal de las pantallas
@@ -173,7 +172,6 @@ public class App extends Application {
 	public App() {
 		service = new Service();
 		service.setAplicacion(this);
-		servicioMercurio = new ServiceMercurio(service);
 		ficherosExtraidos = new HashMap<String, HashMap<String, Item>>();
 	}
 
@@ -529,7 +527,7 @@ public class App extends Application {
 		if (service.getRepoUser().equals("pgm18e")) {
 			Thread t = new Thread(() -> {
 				if (eventoFinalizado) {
-					ficherosMercurio = servicioMercurio.extraer();
+					ficherosMercurio = service.extraerMercurio();
 					if (txtArea.getText().equals("") || ficherosMercurio.size() == 0)
 						txtArea.appendText("@Mercurio>");
 					eventoFinalizado = false;
@@ -558,8 +556,8 @@ public class App extends Application {
 									if (res == 's' || res == 'S') {
 										List<Item> lista = new LinkedList<Item>();
 										lista.addAll(ficherosMercurio.values());
-										servicioMercurio.export(lista);
-										servicioMercurio.commit(lista, servicioMercurio.getLogEntry().getMessage());
+										service.exportMercurio(lista);
+										service.commitMercurio(lista, service.getLogEntryMercurio().getMessage());
 									}
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -573,7 +571,6 @@ public class App extends Application {
 						}
 					}
 				} catch (Exception e) {
-					System.out.println("La excepción da aquí.");
 					e.printStackTrace();
 				}
 			});

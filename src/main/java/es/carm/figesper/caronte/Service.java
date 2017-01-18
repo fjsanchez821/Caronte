@@ -1,9 +1,10 @@
 package es.carm.figesper.caronte;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.FileSystems;
@@ -17,6 +18,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -30,7 +32,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -48,10 +49,10 @@ import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNCommitClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
+import org.tmatesoft.svn.core.wc.SVNStatusClient;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
+import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
-
-import com.sun.tools.internal.ws.processor.model.Response;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -63,7 +64,7 @@ import javafx.scene.control.TextInputDialog;
 public class Service {
 
 	private static final Logger LOGGER = Logger.getLogger(Service.class);
-	
+
 	private String repoUser;
 	private String repoPass;
 
@@ -93,8 +94,11 @@ public class Service {
 	private int odsValidadoCol;
 	private int odsInitRow;
 
+	private String mercurioWorkingCopy;
+	SVNLogEntry logEntryMercurio = null;
+
 	private ClassLoader classLoader;
-	private Properties properties;
+	private SortedProperties properties;
 
 	private int numFilas;
 	private int numPaso;
@@ -124,7 +128,7 @@ public class Service {
 
 	public Service() throws ServiceException {
 
-		properties = new Properties();
+		properties = new SortedProperties();
 
 		try {
 
@@ -135,7 +139,7 @@ public class Service {
 			LOGGER.error(e.getLocalizedMessage(), e);
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
-		
+
 		repoUser = (String) properties.get("repo.user");
 		repoPass = (String) properties.get("repo.pass");
 
@@ -165,6 +169,8 @@ public class Service {
 		odsEntornoCol = Integer.parseInt((String) properties.get("ods.entorno.col")) - 1;
 		odsValidadoCol = Integer.parseInt((String) properties.get("ods.validado.col")) - 1;
 		odsInitRow = Integer.parseInt((String) properties.get("ods.initial.row")) - 1;
+
+		mercurioWorkingCopy = (String) properties.get("mercurio.working.copy");
 
 		totalizadorItem = new Item(0);
 
@@ -706,21 +712,13 @@ public class Service {
 			public void run() {
 				try {
 
-					numPaso = getNumPaso(); // Integer.valueOf(properties.getProperty("numero.paso.actual"))
-											// + 1;
-					// javaFX operations should go here
-
+					numPaso = getNumPaso();
 					TextInputDialog dialog = new TextInputDialog(String.valueOf(numPaso));
 					dialog.setTitle("Introducción del Número de Paso");
 					dialog.setHeaderText("");
 					dialog.setContentText("Introduzca el Número de Paso a Producción:");
 
-					// The Java 8 way to get the response value (with lambda
-					// expression).
-
 					Optional<String> result = dialog.showAndWait();
-					// result.ifPresent(paso -> System.out.println("El paso
-					// elegido ha sido: " + paso));
 					result.ifPresent(paso -> numPaso = Integer.valueOf(paso));
 
 					if (result.isPresent()) {
@@ -1052,6 +1050,201 @@ public class Service {
 		clientManager.dispose();
 	}
 
+	public boolean isCritico(String path) {
+
+		try {
+			FileReader file = new FileReader(properties.getProperty("ficheros.criticos.filename"));
+			BufferedReader lector = new BufferedReader(file);
+			List<String> ficherosCriticos = new LinkedList<String>();
+			String cadena;
+			while ((cadena = lector.readLine()) != null) {
+				ficherosCriticos.add(cadena);
+				// System.out.println(cadena);
+			}
+			lector.close();
+			for (String ficheroCritico : ficherosCriticos) {
+				if (path.contains(ficheroCritico.substring(1).replace("\\", "/")))
+					return true;
+			}
+			return false;
+
+		} catch (Exception e) {
+			LOGGER.error(e.getLocalizedMessage(), e);
+			throw new ServiceException(e.getLocalizedMessage(), e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Item> extraerMercurio() {
+
+		DefaultSVNOptions options = new DefaultSVNOptions();
+		SVNClientManager clientManager = SVNClientManager.newInstance(options, repoUser, repoPass);
+
+		long startRevision = Long.valueOf(properties.getProperty("ultima.revision.subida").toString()) + 1;
+		long endRevision = -1; // HEAD (the latest) revision
+
+		SVNRepository repository = null;
+
+		HashMap<String, Item> ficheros = new HashMap<String, Item>();
+
+		try {
+			repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(srcRepoURL));
+
+			ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(repoUser,
+					repoPass.toCharArray());
+
+			repository.setAuthenticationManager(authManager);
+
+			Collection<Object> logEntries = null;
+
+			logEntries = repository.log(new String[] { "" }, null, startRevision, endRevision, true, true);
+			Iterator<Object> entries = logEntries.iterator();
+			if (entries.hasNext()) {
+				if (logEntryMercurio == null) {
+					logEntryMercurio = (SVNLogEntry) entries.next();
+				} else {
+					while (entries.hasNext()) {
+						SVNLogEntry auxiliar = (SVNLogEntry) entries.next();
+						if (auxiliar.equals(logEntryMercurio))
+							break;
+					}
+					logEntryMercurio = (SVNLogEntry) entries.next();
+				}
+				System.out.println("---------------------------------------------");
+				System.out.println("revision: " + logEntryMercurio.getRevision());
+				System.out.println("author: " + logEntryMercurio.getAuthor());
+				System.out.println("date: " + logEntryMercurio.getDate());
+				System.out.println("log message: " + logEntryMercurio.getMessage());
+
+				if (logEntryMercurio.getChangedPaths().size() > 0) {
+					Set<String> changedPathsSet = logEntryMercurio.getChangedPaths().keySet();
+
+					ficheros.clear();
+
+					for (Iterator<String> changedPaths = changedPathsSet.iterator(); changedPaths.hasNext();) {
+						SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntryMercurio.getChangedPaths()
+								.get(changedPaths.next());
+						String path = entryPath.getPath().substring(10);
+						Item item = new Item(path, String.valueOf(logEntryMercurio.getRevision()));
+						item.getAuthor().set(logEntryMercurio.getAuthor());
+						item.getTipoSVN().set(String.valueOf(entryPath.getType()));
+						ficheros.put(entryPath.getPath(), item);
+					}
+				}
+				// }
+				for (Entry<String, Item> fichero : ficheros.entrySet()) {
+					System.out.println(" " + fichero.getValue().getTipoSVN() + " " + fichero.getValue().getPath() + " "
+							+ fichero.getValue().getRevision() + " " + fichero.getValue().getAuthor());
+				}
+				totalizadorItem.getTotalFicheros().set(totalizadorItem.getTotalFicheros().get() + ficheros.size());
+				totalizadorItem.getPath().set(String.valueOf(totalizadorItem.getTotalFicheros().get()));
+				System.out.println("Se subirán un total de " + ficheros.size() + " ficheros");
+				System.out.print("¿Desea continuar con la operación? (s/n) ->");
+			}
+
+			return ficheros;
+		} catch (SVNException e) {
+			e.printStackTrace();
+			return ficheros;
+		} finally {
+			clientManager.dispose();
+		}
+
+	}
+
+	public void exportMercurio(List<Item> items) {
+
+		DefaultSVNOptions options = new DefaultSVNOptions();
+		SVNClientManager clientManager = SVNClientManager.newInstance(options, repoUser, repoPass);
+
+		SVNUpdateClient updateClient = clientManager.getUpdateClient();
+		updateClient.setIgnoreExternals(false);
+
+		for (Item item : items) {
+
+			try {
+
+				SVNURL url = SVNURL.parseURIEncoded(srcRepoURL + item.getPath().get());
+				File path = new File(mercurioWorkingCopy + item.getPath().get().replaceAll("fgGesper", "figesper"));
+				SVNRevision revision = SVNRevision.parse(item.getRevision().get());
+				updateClient.doExport(url, path, revision, revision, "native", true, SVNDepth.INFINITY);
+				item.getExported().set(true);
+
+			} catch (SVNException e) {
+				LOGGER.error(e.getLocalizedMessage());
+			}
+		}
+
+		clientManager.dispose();
+	}
+
+	public void commitMercurio(List<Item> items, String message) throws ServiceException {
+
+		DefaultSVNOptions options = new DefaultSVNOptions();
+		SVNClientManager clientManager = SVNClientManager.newInstance(options, repoUser, repoPass);
+
+		SVNWCClient sVNWCClient = clientManager.getWCClient();
+
+		SVNLogEntry logEntry = null;
+
+		SVNStatusClient statusClient = clientManager.getStatusClient();
+		statusClient.setIgnoreExternals(true);
+
+		SVNCommitClient commitClient = clientManager.getCommitClient();
+		commitClient.setIgnoreExternals(false);
+
+		List<File> ficheros = new ArrayList<File>(items.size());
+
+		for (int p = 0; p < items.size(); p++) {
+
+			File path = new File(mercurioWorkingCopy + items.get(p).getPath().get().replaceAll("fgGesper", "figesper"));
+
+			if (!isCritico(path.getPath())) {
+				String tipo = items.get(p).getTipoSVN().get();
+				if (tipo != null && tipo.equals("D")) {
+					if (path.exists()) {
+						try {
+							sVNWCClient.doDelete(path, false, false);
+						} catch (SVNException e) {
+							e.printStackTrace();
+						}
+						ficheros.add(path);
+					}
+				} else if (tipo != null && tipo.equals("A")) {
+					try {
+						sVNWCClient.doAdd(path, false, false, false, SVNDepth.INFINITY, false, false);
+					} catch (SVNException e) {
+						e.printStackTrace();
+					}
+					ficheros.add(path);
+				} else {
+					ficheros.add(path);
+				}
+			}
+		}
+
+		try {
+
+			commitClient.doCommit(ficheros.toArray(new File[ficheros.size()]), false, message, null, null, false, true,
+					SVNDepth.INFINITY);
+
+			logEntryMercurio = null;
+
+			properties.setProperty("ultima.revision.subida", items.get(0).getRevision().get());
+			File f = new File("./src/main/resources/caronte.properties");
+			OutputStream fichProp;
+			fichProp = new FileOutputStream(f);
+			properties.store(fichProp, "");
+			System.out.println("Commit finalizado con éxito.");
+
+		} catch (SVNException | IOException e) {
+			LOGGER.error(e.getLocalizedMessage(), e);
+			throw new ServiceException(e.getLocalizedMessage(), e);
+		}
+
+		clientManager.dispose();
+	}
+
 	public String getRepoUser() {
 		return repoUser;
 	}
@@ -1062,5 +1255,9 @@ public class Service {
 
 	public String getSrcRepoURL() {
 		return srcRepoURL;
+	}
+	
+	public SVNLogEntry getLogEntryMercurio() {
+		return logEntryMercurio;
 	}
 }
