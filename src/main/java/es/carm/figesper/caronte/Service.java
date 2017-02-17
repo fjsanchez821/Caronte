@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -22,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
@@ -99,6 +100,7 @@ public class Service {
 
 	private ClassLoader classLoader;
 	private SortedProperties properties;
+	private InputStream ficherosCriticos;
 
 	private int numFilas;
 	private int numPaso;
@@ -419,7 +421,9 @@ public class Service {
 				}
 				String glpi = row.getCellByIndex(0).getStringValue();
 				if (glpi.isEmpty()) {
-					break;
+					if (row.getCellByIndex(1).getStringValue().isEmpty()) {
+						break;
+					}
 				}
 				Item item;
 				// Se hace un switch segun la pagina del EXCEL
@@ -867,7 +871,7 @@ public class Service {
 		DefaultSVNOptions options = new DefaultSVNOptions();
 		SVNClientManager clientManager = SVNClientManager.newInstance(options, repoUser, repoPass);
 
-		long startRevision = 17000;
+		long startRevision = 18000;
 		long endRevision = -1; // HEAD (the latest) revision
 
 		SVNRepository repository = null;
@@ -887,7 +891,8 @@ public class Service {
 			logEntries = repository.log(new String[] { "" }, null, startRevision, endRevision, true, true);
 			for (Iterator entries = logEntries.iterator(); entries.hasNext();) {
 				SVNLogEntry logEntry = (SVNLogEntry) entries.next();
-				if (logEntry.getMessage().contains(glpi)) {
+				//if (logEntry.getMessage().contains(glpi)) {
+				if (logEntry.getMessage().startsWith("GLPI " + glpi) || logEntry.getMessage().startsWith("GLPI: " + glpi)) {
 					System.out.println("---------------------------------------------");
 					System.out.println("revision: " + logEntry.getRevision());
 					System.out.println("author: " + logEntry.getAuthor());
@@ -1053,8 +1058,9 @@ public class Service {
 	public boolean isCritico(String path) {
 
 		try {
-			FileReader file = new FileReader(properties.getProperty("ficheros.criticos.filename"));
-			BufferedReader lector = new BufferedReader(file);
+			ficherosCriticos = classLoader.getResourceAsStream("ficherosCriticos.txt");
+			InputStreamReader ficheros = new InputStreamReader(ficherosCriticos);
+			BufferedReader lector = new BufferedReader(ficheros);
 			List<String> ficherosCriticos = new LinkedList<String>();
 			String cadena;
 			while ((cadena = lector.readLine()) != null) {
@@ -1256,7 +1262,7 @@ public class Service {
 	public String getSrcRepoURL() {
 		return srcRepoURL;
 	}
-	
+
 	public SVNLogEntry getLogEntryMercurio() {
 		return logEntryMercurio;
 	}

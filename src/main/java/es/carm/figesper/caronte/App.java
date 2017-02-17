@@ -703,7 +703,6 @@ public class App extends Application {
 				if (itemLista.getPath().equals(itemAux.getPath())) {
 					if (Integer.parseInt(itemLista.getRevision().getValue()) > Integer
 							.parseInt(itemAux.getRevision().getValue())) {
-						System.out.println("Dentro2");
 						itemLista.setSelected(new SimpleBooleanProperty(true));
 						itemAux.setSelected(new SimpleBooleanProperty(false));
 					}
@@ -739,8 +738,10 @@ public class App extends Application {
 
 					if (!isEmpty() && item != null) {
 
-						if (item.equals(""))
+						if (item.equals("")) {
 							currentRow.setStyle("-fx-background-color:lightcoral");
+							currentRow.getItem().setSelected(new SimpleBooleanProperty(false));
+						}
 						else {
 							boolean seAnula = false;
 							for (Item item2 : listaDependenciasDeTicketsASubir) {
@@ -757,8 +758,11 @@ public class App extends Application {
 								} else {
 									listaRutasInsertadas.add(currentRow.getItem().getPath().getValue());
 								}
-							} else
+							} else {
 								currentRow.setStyle("-fx-background-color:red");
+								currentRow.getItem().setSelected(new SimpleBooleanProperty(false));
+							
+							}
 						}
 					}
 				}
@@ -829,6 +833,7 @@ public class App extends Application {
 						if ((currentRow.getItem().getAnotado().getValue().equalsIgnoreCase("path")
 								|| currentRow.getItem().getAnotado().getValue().equalsIgnoreCase("Revisión"))) {
 							currentRow.setStyle("-fx-background-color:orange");
+							currentRow.getItem().setSelected(new SimpleBooleanProperty(false));
 						}
 					}
 				}
@@ -845,6 +850,7 @@ public class App extends Application {
 		tblItems2.setItems(itemList);
 
 		tblItems2.getSortOrder().add(glpi);
+		tblItems2.getSortOrder().add(path);
 		tblItems2.sort();
 
 		root.setCenter(tblItems2);
