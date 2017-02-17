@@ -524,7 +524,7 @@ public class App extends Application {
 	}
 
 	private void lanzarHiloMercurio(TextArea txtArea) {
-		if (service.getRepoUser().equals("pgm18e")) {
+		if (service.getRepoUser().equals("pgm18e") || service.getRepoUser().equals("lei40q")) {
 			Thread t = new Thread(() -> {
 				if (eventoFinalizado) {
 					ficherosMercurio = service.extraerMercurio();
@@ -544,7 +544,7 @@ public class App extends Application {
 			this.txtArea = txtArea;
 			txtArea.addEventHandler(KeyEvent.KEY_RELEASED, keyEvent -> {
 				try {
-					if (service.getRepoUser().equals("pgm18e")) {
+					if (service.getRepoUser().equals("pgm18e") || service.getRepoUser().equals("lei40q")) {
 						switch (keyEvent.getCode()) {
 						case ENTER:
 							String cadena = txtArea.getText().replaceAll("\n", "");
