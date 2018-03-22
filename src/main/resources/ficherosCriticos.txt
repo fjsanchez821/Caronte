@@ -3,6 +3,7 @@
 .\comunSrc\es\carm\figesper\comun\faces\bean\GlobalBean.java
 .\comunSrc\es\carm\figesper\comun\faces\bean\MenuGesperBean.java
 .\comunSrc\es\carm\figesper\comun\faces\bean\UserBeanImpl.java
+.\comunSrc\es\carm\figesper\comun\faces\navigator\tag\VentanaPorSesion.java
 .\comunSrc\es\carm\figesper\comun\faces\servlet\SessionPing.java
 .\comunSrc\es\carm\figesper\comun\filtros\FiltroModulosProduccionGesper.java
 .\comunSrc\es\carm\figesper\comun\filtros\FiltroSesionVistaGesper.java
@@ -19,7 +20,6 @@
 .\loginSrc\es\carm\figesper\login\beans\LoginBean.java
 .\loginSrc\es\carm\figesper\login\servicios\ServicioLogin.java
 .\loginSrc\es\carm\figesper\login\servicios\impl\ServicioLoginImpl.java
-.\Prueba\ff.txt
 .\Prueba\pruebaPackage\FalloFechaBean.java
 .\Prueba\pruebaPackage\FuenteDatosPrueba.java
 .\Prueba\pruebaPackage\LogFigesperTestFormBean.java
@@ -47,5 +47,10 @@
 .\Web\WEB-INF\configuracion\Prueba\contextoServicios.xml
 .\Web\WEB-INF\configuracion\Prueba\facesBeans.xml
 .\Web\WEB-INF\configuracion\Prueba\facesNavegacion.xml
+.\Web\META-INF\context.xml
+.\grhSisListadoSrc\es\carm\figesper\grhSisListado\beans\TrabPendListaBean.java
+.\grhSisListadoSrc\es\carm\figesper\grhSisListado\beans\TrlmTrab001FormBean.java
+.\resources\configuracion\contextoConexionGesper.xml
 .\figesper\grhCorCorreoSrc\es\carm\figesper\grhCorCorreo\servicios\ServicioCorreo.java
 .\figesper\grhCorCorreoSrc\es\carm\figesper\grhCorCorreo\servicios\impl\ServicioCorreoImpl.java
+.\utilidades.js

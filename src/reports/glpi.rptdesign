@@ -29,7 +29,7 @@
     <property name="imageDPI">96</property>
     <data-sources>
         <oda-data-source extensionID="org.eclipse.birt.report.data.oda.excel" name="Data Source" id="4">
-            <property name="URI">T:\DGI\Que\SIC\Proyectos\Gesper\GP METAENLACE\Doumentación\SEGUIMIENTO\2016-02\FIGESPER - GLPI Seguimiento 201602.xls</property>
+            <property name="URI">C:\Users\metaenlace\Desktop\GLPI.xls</property>
             <property name="INCLCOLUMNNAME">yes</property>
             <property name="INCLTYPELINE">no</property>
         </oda-data-source>
