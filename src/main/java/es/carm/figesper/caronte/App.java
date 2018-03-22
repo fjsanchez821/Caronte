@@ -63,6 +63,7 @@ public class App extends Application {
 	private HashMap<String, HashMap<String, Item>> ficherosExtraidos;
 
 	private HashMap<String, Item> ficherosMercurio;
+	private HashMap<String, Item> ficherosMercurioPro;
 
 	private Stage primaryStage; // Contenedor principal de las pantallas
 								// (CANVAS)
@@ -140,8 +141,10 @@ public class App extends Application {
 	private MenuBar menuBarOpciones;
 	private Menu menuPaso;
 	private Menu menuSync;
+	private Menu menuSyncPro;
 	private MenuItem itmPaso;
 	private MenuItem itmSync;
+	private MenuItem itmSyncPro;
 
 	private boolean eventoFinalizado = true;
 
@@ -218,19 +221,30 @@ public class App extends Application {
 
 		menuPaso = new Menu("Paso");
 		menuSync = new Menu("Sync");
+		menuSyncPro = new Menu("Sync PRO");
 
 		itmPaso = new MenuItem("Paso");
 		itmSync = new MenuItem("Sync");
+		itmSyncPro = new MenuItem("Sync PRO");
 
 		menuPaso.getItems().addAll(itmPaso);
 		menuSync.getItems().addAll(itmSync);
+		menuSyncPro.getItems().addAll(itmSyncPro);
 
-		menuBarOpciones.getMenus().addAll(menuPaso, menuSync);
+		menuBarOpciones.getMenus().addAll(menuPaso, menuSync, menuSyncPro);
 
 		itmSync.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				initSync(root);
+				lblOdsPath.setText("item");
+			}
+		});
+
+		itmSyncPro.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				initSyncPro(root);
 				lblOdsPath.setText("item");
 			}
 		});
@@ -496,14 +510,17 @@ public class App extends Application {
 
 		menuPaso = new Menu("Paso");
 		menuSync = new Menu("Sync");
+		menuSyncPro = new Menu("Sync PRO");
 
 		itmPaso = new MenuItem("Paso");
 		itmSync = new MenuItem("Sync");
+		itmSyncPro = new MenuItem("Sync PRO");
 
 		menuPaso.getItems().addAll(itmPaso);
 		menuSync.getItems().addAll(itmSync);
+		menuSyncPro.getItems().addAll(itmSyncPro);
 
-		menuBarOpciones.getMenus().addAll(menuPaso, menuSync);
+		menuBarOpciones.getMenus().addAll(menuPaso, menuSync, menuSyncPro);
 
 		menuPaso.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -523,6 +540,62 @@ public class App extends Application {
 		});
 	}
 
+	private void initSyncPro(BorderPane root) {
+
+		btnExtraer.setVisible(false);
+		btnActualizar.setVisible(false);
+		lblMessage.setVisible(false);
+		txtMessage.setVisible(false);
+
+		TextArea areaTextoConsolaPro = new TextArea();
+		BorderPane pnlBottom = new BorderPane();
+		root.setCenter(pnlBottom);
+
+		// Comentar/Descomentar estas 4 lineas para que los mensajes
+		// desaparezcan/aparezcan por consola
+		ConsolePro consolaPro = new ConsolePro(areaTextoConsolaPro);
+		PrintStream psPro = new PrintStream(consolaPro, true);
+		System.setOut(psPro);
+		System.setErr(psPro);
+		pnlBottom.setCenter(areaTextoConsolaPro);
+
+		menuBarOpciones = new MenuBar();
+		menuBarOpciones.prefWidthProperty().bind(primaryStage.widthProperty());
+
+		root.setTop(menuBarOpciones);
+
+		menuPaso = new Menu("Paso");
+		menuSync = new Menu("Sync");
+		menuSyncPro = new Menu("Sync PRO");
+
+		itmPaso = new MenuItem("Paso");
+		itmSync = new MenuItem("Sync");
+		itmSyncPro = new MenuItem("Sync PRO");
+
+		menuPaso.getItems().addAll(itmPaso);
+		menuSync.getItems().addAll(itmSync);
+		menuSyncPro.getItems().addAll(itmSyncPro);
+
+		menuBarOpciones.getMenus().addAll(menuPaso, menuSync, menuSyncPro);
+
+		menuPaso.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				initComponents(root);
+				lblOdsPath.setText("item");
+			}
+		});
+
+		lanzarHiloMercurioPro(areaTextoConsolaPro);
+
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				areaTextoConsolaPro.requestFocus();
+			}
+		});
+	}
+
 	private void lanzarHiloMercurio(TextArea txtArea) {
 		if (service.getRepoUser().equals("pgm18e") || service.getRepoUser().equals("lei40q")) {
 			Thread t = new Thread(() -> {
@@ -530,6 +603,20 @@ public class App extends Application {
 					ficherosMercurio = service.extraerMercurio();
 					if (txtArea.getText().equals("") || ficherosMercurio.size() == 0)
 						txtArea.appendText("@Mercurio>");
+					eventoFinalizado = false;
+				}
+			});
+			t.run();
+		}
+	}
+
+	private void lanzarHiloMercurioPro(TextArea txtArea) {
+		if (service.getRepoUser().equals("pgm18e")) {
+			Thread t = new Thread(() -> {
+				if (eventoFinalizado) {
+					ficherosMercurioPro = service.extraerMercurioPro();
+					if (txtArea.getText().equals("") || ficherosMercurioPro.size() == 0)
+						txtArea.appendText("@MercurioPRO>");
 					eventoFinalizado = false;
 				}
 			});
@@ -584,6 +671,53 @@ public class App extends Application {
 
 	}
 
+	private class ConsolePro extends OutputStream {
+		private TextArea txtArea;
+
+		public ConsolePro(TextArea txtArea) {
+			this.txtArea = txtArea;
+			txtArea.addEventHandler(KeyEvent.KEY_RELEASED, keyEvent -> {
+				try {
+					if (service.getRepoUser().equals("pgm18e")) {
+						switch (keyEvent.getCode()) {
+						case ENTER:
+							String cadena = txtArea.getText().replaceAll("\n", "");
+							if (cadena != null) {
+								try {
+									char res = new String(cadena.substring(cadena.length() - 1, cadena.length()))
+											.toCharArray()[0];
+
+									if (res == 's' || res == 'S') {
+										List<Item> lista = new LinkedList<Item>();
+										lista.addAll(ficherosMercurioPro.values());
+										service.exportMercurioPro(lista);
+										service.commitMercurioPro(lista, service.getLogEntryMercurioPro().getMessage());
+									}
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+							eventoFinalizado = true;
+							lanzarHiloMercurioPro(txtArea);
+							break;
+						default:
+							break;
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+		}
+
+		@Override
+		public void write(int i) throws IOException {
+
+			txtArea.appendText(String.valueOf((char) i));
+		}
+
+	}
+
 	private void initComponents2(BorderPane root) {
 
 		VBox topContainer2 = new VBox();
@@ -605,7 +739,7 @@ public class App extends Application {
 		tblItems2.setEditable(true);
 
 		chkAll2 = new CheckBox();
-		chkAll2.setDisable(true);
+		chkAll2.setDisable(false);
 		chkAll2.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
 			@Override
@@ -669,6 +803,7 @@ public class App extends Application {
 																	// pasar a
 																	// produccion
 
+		// Comprobamos que los item extraidos están en el PENDIENTE
 		for (Item itemLista : itemList) {// Lista con los elementos a modificar
 			itemLista.setSelected(new SimpleBooleanProperty(false));
 			itemLista.setAnotado(new SimpleStringProperty("Path"));
@@ -680,16 +815,11 @@ public class App extends Application {
 				if (itemExcel.getPath().toString().equalsIgnoreCase(itemLista.getPath().toString())) {
 					itemLista.setAnotado(new SimpleStringProperty("Revisión"));
 					if (itemExcel.getRevision().toString().equalsIgnoreCase(itemLista.getRevision().toString())) {
-
 						itemLista.setAnotado(new SimpleStringProperty(""));
 						itemLista.setSelected(new SimpleBooleanProperty(true));
+						break;
 					}
 				}
-				/*
-				 * if(itemLista.getRevisionDependiente()!=null){
-				 * System.out.println(Integer.parseInt(itemLista.
-				 * getRevisionDependiente().getValue().toString())); }
-				 */
 			}
 			if (itemLista.getGlpiDependiente() != null) {
 				if (!(itemLista.getGlpiDependiente().getValue().toString()).equalsIgnoreCase("")) {
@@ -698,6 +828,8 @@ public class App extends Application {
 			}
 		}
 
+		// Comprobamos si estamos pasando más de una revisión del mismo fuente y
+		// marcamos la mayor
 		for (Item itemLista : itemList) {
 			for (Item itemAux : itemList) {
 				if (itemLista.getPath().equals(itemAux.getPath())) {
@@ -738,17 +870,29 @@ public class App extends Application {
 
 					if (!isEmpty() && item != null) {
 
+						// Si dependencias es "", es porque se ha borrado el
+						// glpi del pendiente
 						if (item.equals("")) {
 							currentRow.setStyle("-fx-background-color:lightcoral");
-							currentRow.getItem().setSelected(new SimpleBooleanProperty(false));
-						}
-						else {
-							boolean seAnula = false;
-							for (Item item2 : listaDependenciasDeTicketsASubir) {
-								if (item2.getGlpi().getValue().equals(item))
-									seAnula = true;
+							// currentRow.getItem().setSelected(new
+							// SimpleBooleanProperty(false));
+						} else { // Vemos si vamos a subir todos los tickets que
+									// están en las dependencias
+							boolean seSube = false;
+							String[] ticketsDependientes = item.split(", ");
+							for (String ticketDependiente : ticketsDependientes) {
+								seSube = false;
+								for (Item itemASubir : listaDependenciasDeTicketsASubir) {
+									if (ticketDependiente.equals(itemASubir.getGlpi().getValue())) {
+										seSube = true;
+										break;
+									}
+								}
+								if (!seSube) {
+									break;
+								}
 							}
-							if (seAnula) {
+							if (seSube) {
 								currentRow.setStyle("-fx-background-color:green");
 								if (listaRutasInsertadas.contains(currentRow.getItem().getPath().getValue())
 										&& !mayorVersion(currentRow.getItem().getPath().getValue(),
@@ -760,8 +904,8 @@ public class App extends Application {
 								}
 							} else {
 								currentRow.setStyle("-fx-background-color:red");
-								currentRow.getItem().setSelected(new SimpleBooleanProperty(false));
-							
+								// currentRow.getItem().setSelected(new
+								// SimpleBooleanProperty(false));
 							}
 						}
 					}
@@ -792,33 +936,6 @@ public class App extends Application {
 		anotado.setSortable(false);
 		anotado.setEditable(false);
 
-		// Poner a true que no está en ambos excels
-
-		// listaDependenciasDeTicketsASubir//Lista del excel pendiente
-		// produccion
-
-		// Comprueba que ruta y versión coinciden
-
-		String num1, num2;
-
-		for (int i = 0; i < itemList.size() - 1; ++i) {// Bucle hecho para
-														// comprobar la mayor
-														// revision que haya en
-														// el excel
-			for (int j = i + 1; j < itemList.size(); ++j) {
-				if ((itemList.get(i).getPath().getValue().toString()
-						.equalsIgnoreCase(itemList.get(j).getPath().getValue().toString()))) {
-					num1 = itemList.get(i).getRevision().getValue().toString();
-					num2 = itemList.get(j).getRevision().getValue().toString();
-					if (Integer.parseInt(num1) > Integer.parseInt(num2)) {
-						itemList.get(j).setSelected(new SimpleBooleanProperty(false));
-						itemList.get(j).setAnotado(new SimpleStringProperty(""));
-					}
-
-				}
-			}
-		}
-
 		anotado.setCellValueFactory(c -> c.getValue().getAnotado());
 		anotado.setCellFactory(c -> {
 			return new TableCell<Item, String>() {
@@ -828,12 +945,15 @@ public class App extends Application {
 					TableRow<Item> currentRow = getTableRow();
 					super.updateItem(item, empty);
 
+					currentRow.setDisable(false);
+
 					if (getItem() != null) {
 						setText(currentRow.getItem().getAnotado().getValue());
 						if ((currentRow.getItem().getAnotado().getValue().equalsIgnoreCase("path")
 								|| currentRow.getItem().getAnotado().getValue().equalsIgnoreCase("Revisión"))) {
 							currentRow.setStyle("-fx-background-color:orange");
-							currentRow.getItem().setSelected(new SimpleBooleanProperty(false));
+							// currentRow.getItem().setSelected(new
+							// SimpleBooleanProperty(false));
 						}
 					}
 				}
@@ -1051,14 +1171,6 @@ public class App extends Application {
 	}
 
 	public static void main(String[] args) {
-		// Service servicio = new Service();
-		// File fichero = new File(
-		// "T:\\DGI\\Que\\SIC\\Proyectos\\Gesper\\GP METAENLACE\\Seguimiento
-		// Tickets\\GLPI - 2016\\GLPI FIGESPER - CARM C.HACIENDA 201605.ods");
-		// List<Item> items = servicio.parse(fichero);
-		// for (Item item : items) {
-		// servicio.extraer(item.getGlpi().getValue());
-		// }
 		launch(args);
 	}
 }
